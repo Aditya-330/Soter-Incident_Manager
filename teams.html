@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Teams & Rosters — Soter">
+  <title>Teams & Rosters — Soter</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body class="app-body">
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script> requireLogin(); </script>
+
+  
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <img src="logo.png" alt="Logo">
+      <span class="sidebar__brand-name">Soter</span>
+    </a>
+
+    <nav class="sidebar__nav">
+      <div class="sidebar__section-label">Workspace</div>
+      <a href="dashboard.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Dashboard
+      </a>
+      <a href="trigger.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        Report Incident
+      </a>
+      <a href="services.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+        Services
+      </a>
+      <a href="teams.html" class="sidebar__link sidebar__link--active">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        Teams
+      </a>
+      <a href="audit.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Audit Log
+      </a>
+      
+      <div id="sidebar-admin-link"></div>
+    </nav>
+
+    <div class="sidebar__user" id="sidebar-user"></div>
+  </aside>
+
+  
+  <main class="app-main fade-in">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.75rem;">
+      <div>
+        <h1 style="font-size:1.65rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:0.15rem;">Engineering Teams &amp; Rosters</h1>
+        <p class="text-muted" style="font-size:0.8125rem;">Create responder teams, provision developer login accounts with roles, and manage on-call rosters.</p>
+      </div>
+    </div>
+
+    
+    <div class="two-col" id="admin-actions-section" style="margin-bottom: 2rem;">
+
+      
+      <div id="teams-create-team-card">
+        <div class="card">
+          <h2 class="card__title" style="margin-bottom: 0.2rem; font-size:1.05rem;">1. Create Team</h2>
+          <p class="card__text" style="margin-bottom: 1rem; font-size:0.8125rem;">Define engineering groups responsible for services and SLA rotations.</p>
+          <form id="add-team-form">
+            <div class="form-group">
+              <label class="form-label" for="team-name">Team Name</label>
+              <input class="form-input" type="text" id="team-name" placeholder="e.g. Game Backend Team" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="team-description">Description &amp; Domain</label>
+              <textarea class="form-input form-textarea" id="team-description" placeholder="What services and infrastructure does this team manage?"></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary" style="width:100%;">Create Team</button>
+          </form>
+        </div>
+      </div>
+
+      
+      <div>
+        <div class="card">
+          <h2 class="card__title" style="margin-bottom: 0.2rem; font-size:1.05rem;">2. Provision Developer Account</h2>
+          <p class="card__text" style="margin-bottom: 1rem; font-size:0.8125rem;">Create engineer login credentials (email &amp; password) and assign their escalation role.</p>
+          
+          <form id="provision-member-form">
+            <div class="two-col" style="gap:0.75rem; margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="new-member-name">Developer Name</label>
+                <input class="form-input" type="text" id="new-member-name" placeholder="e.g. Maya Lin" required>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="new-member-email">Login Email</label>
+                <input class="form-input" type="email" id="new-member-email" placeholder="maya@pixelforge.com" required>
+              </div>
+            </div>
+
+            <div class="two-col" style="gap:0.75rem; margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="new-member-password">Password</label>
+                <input class="form-input" type="password" id="new-member-password" placeholder="Create password" required>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="new-member-role">On-Call Role / Tier</label>
+                <select class="form-select" id="new-member-role" required>
+                  <option value="junior" selected>SDE I (Tier 1 — Junior Responder)</option>
+                  <option value="senior">SDE II (Tier 2 — Senior Responder)</option>
+                  <option value="teamadmin">Tech Lead (Tier 3 — Team Admin)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label class="form-label" for="new-member-team">Assign to Team</label>
+              <select class="form-select" id="new-member-team" required>
+                
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn--primary" style="width:100%;">Create &amp; Provision Developer</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    
+    <div class="section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 class="section__title" style="margin:0; font-size:1.15rem;">Active Teams &amp; Rosters</h2>
+      </div>
+      <div class="grid grid-2" id="teams-list" style="gap: 1.25rem;">
+        
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/teams.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/audit.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    async function populateTeamsDropdown() {
+      var select = document.getElementById('new-member-team');
+      if (!select) return;
+      var teams = await getAllTeams();
+      var currentUser = getCurrentUser();
+
+      if (currentUser && currentUser.role === 'teamadmin' && currentUser.teamId) {
+        var myTeam = teams.filter(function(t) { return t.id === currentUser.teamId; })[0];
+        if (myTeam) {
+          select.innerHTML = '<option value="' + myTeam.id + '" selected>' + myTeam.name + ' (Your Team)</option>';
+        } else {
+          select.innerHTML = '<option value="">-- No Team Assigned --</option>';
+        }
+        return;
+      }
+
+      var html = '<option value="">-- Select Team --</option>';
+      teams.forEach(function(t) {
+        html += '<option value="' + t.id + '">' + t.name + '</option>';
+      });
+      select.innerHTML = html;
+      if (teams.length > 0) {
+        select.value = teams[0].id;
+      }
+    }
+
+    (async function() {
+      // Sidebar user
+      var user = getCurrentUser();
+      var sidebarUser = document.getElementById('sidebar-user');
+      if (user && sidebarUser) {
+        var roleDisplay = user.role === 'company_admin' ? 'Company Admin' : (user.role === 'platform_superadmin' ? 'Platform Admin' : user.role.charAt(0).toUpperCase() + user.role.slice(1));
+        sidebarUser.innerHTML =
+          '<div class="sidebar__user-info">' +
+            '<div style="flex:1; min-width:0;">' +
+              '<div class="sidebar__user-name">' + user.name + '</div>' +
+              '<span class="badge badge--' + user.role + '" style="font-size:0.65rem;">' + roleDisplay + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<button class="sidebar__logout" onclick="logout()">Sign out</button>';
+      }
+
+      // Impersonation banner
+      if (user && user.role === 'platform_superadmin') {
+        var mainEl = document.querySelector('.app-main');
+        if (mainEl) {
+          var banner = document.createElement('div');
+          banner.style.cssText = 'background:rgba(147,51,234,0.1); border:1px solid rgba(147,51,234,0.3); border-radius:var(--radius-sm); padding:0.6rem 1rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;';
+          banner.innerHTML =
+            '<span style="font-size:0.85rem; color:#9333ea; font-weight:600;">Viewing as Platform Superadmin (Teams &amp; Rosters)</span>' +
+            '<a href="platform-admin.html" class="btn btn--sm btn--primary">Back to Platform Console &rarr;</a>';
+          mainEl.insertBefore(banner, mainEl.firstChild);
+        }
+      }
+
+      // Non-admins only see their roster, hide team creation/provisioning forms
+      if (!hasPermission('teamadmin')) {
+        var actionsSection = document.getElementById('admin-actions-section');
+        if (actionsSection) actionsSection.style.display = 'none';
+      }
+
+      if (hasPermission('teamadmin')) {
+        document.getElementById('sidebar-admin-link').innerHTML =
+          '<a href="admin.html" class="sidebar__link">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>' +
+            'Admin Panel' +
+          '</a>';
+      }
+
+      if (!hasPermission('company_admin')) {
+        var createTeamEl = document.getElementById('teams-create-team-card');
+        if (createTeamEl) createTeamEl.style.display = 'none';
+      }
+
+      await populateTeamsDropdown();
+      await renderTeamList('teams-list');
+
+      // Create Team Form
+      var teamForm = document.getElementById('add-team-form');
+      if (teamForm) {
+        teamForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          var name = document.getElementById('team-name').value.trim();
+          var desc = document.getElementById('team-description').value.trim();
+
+          if (!name) {
+            showToast('Team name is required.', 'error');
+            return;
+          }
+
+          var existingTeams = await getAllTeams();
+          var isDuplicate = existingTeams.some(function(t) {
+            return t.name.trim().toLowerCase() === name.toLowerCase();
+          });
+          if (isDuplicate) {
+            showToast('A team named "' + name + '" already exists.', 'error');
+            return;
+          }
+
+          await addTeam(name, desc);
+          showToast('Team "' + name + '" created successfully!', 'success');
+          teamForm.reset();
+
+          await populateTeamsDropdown();
+          await renderTeamList('teams-list');
+        });
+      }
+
+      // Provision Developer Form
+      var provForm = document.getElementById('provision-member-form');
+      if (provForm) {
+        provForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          var name = document.getElementById('new-member-name').value.trim();
+          var email = document.getElementById('new-member-email').value.trim();
+          var password = document.getElementById('new-member-password').value;
+          var role = document.getElementById('new-member-role').value;
+          var teamId = document.getElementById('new-member-team').value;
+
+          if (!name || !email || !password || !teamId) {
+            showToast('Please fill out all developer details and select a team.', 'error');
+            return;
+          }
+
+          try {
+            await createAndAssignMember(name, email, password, role, teamId);
+            var roleLabel = role === 'junior' ? 'SDE I' : (role === 'senior' ? 'SDE II' : 'Tech Lead');
+            showToast('Developer account for ' + name + ' (' + roleLabel + ') created! They can now log in.', 'success');
+            provForm.reset();
+            await populateTeamsDropdown();
+            await renderTeamList('teams-list');
+          } catch(ex) {
+            showToast(ex.message || 'Error provisioning account.', 'error');
+          }
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>
