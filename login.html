@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Log in to Soter">
+  <title>Login — Soter</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body class="fade-in">
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    var user = getCurrentUser();
+    if (user) {
+      if (user.role === 'platform_superadmin') {
+        window.location.href = 'platform-admin.html';
+      } else {
+        window.location.href = 'dashboard.html';
+      }
+    }
+  </script>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <img src="logo.png" alt="Logo" class="auth-card__logo">
+      <h1 style="font-size:1.5rem; margin-bottom:0.25rem;">Log in to your account</h1>
+      <p class="text-muted" style="margin-bottom:2rem; font-size:0.875rem;">Enter your credentials to access the console</p>
+
+      <div id="login-error" style="color:var(--status-critical); font-size:0.875rem; margin-bottom:1rem; text-align:center; line-height:1.4;"></div>
+
+      <form id="login-form" style="text-align:left;">
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input class="form-input" type="email" id="email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-input" type="password" id="password" required>
+        </div>
+        <button type="submit" class="btn btn--primary" style="width:100%; margin-top:0.5rem; padding: 0.75rem;">Sign In</button>
+      </form>
+
+      <div style="margin-top:2rem; font-size:0.8125rem; color:var(--text-subtle);">
+        New to Soter? 
+        <a href="signup.html" style="color:var(--text-main); font-weight:500;">Join a workspace</a>
+        or
+        <a href="register.html" style="color:var(--text-main); font-weight:500;">register a company</a>.
+      </div>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var err = document.getElementById('login-error');
+      err.textContent = '';
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      const ogText = btn.textContent;
+      btn.textContent = 'Authenticating...';
+      btn.disabled = true;
+
+      try {
+        const res = await login(
+          document.getElementById('email').value.trim(),
+          document.getElementById('password').value
+        );
+        if (res.success) {
+          window.location.href = res.redirect || 'dashboard.html';
+        } else {
+          err.textContent = res.error || 'Invalid email or password.';
+          btn.textContent = ogText;
+          btn.disabled = false;
+        }
+      } catch(ex) {
+        err.textContent = 'Connection error. Please try again.';
+        btn.textContent = ogText;
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
