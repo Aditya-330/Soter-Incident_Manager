@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Next-Generation On-Call Platform">
+  <title>Soter</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body>
+  
+  <script src="js/storage.js"></script>
+
+  
+  <header class="topbar">
+    <div class="topbar__brand">
+      <img src="logo.png" class="topbar__logo" alt="Logo">
+      <span id="brand-name">Soter</span>
+    </div>
+    <nav class="topbar__nav">
+      <a href="#features" class="topbar__link">Features</a>
+      <a href="#customers" class="topbar__link">Customers</a>
+      <a href="#pricing" class="topbar__link">Pricing</a>
+    </nav>
+    <div class="topbar__user" id="topbar-cta">
+      
+    </div>
+  </header>
+
+  
+  <main class="page-body fade-in">
+    <section class="hero">
+      <h1 class="hero__title">Context Efficient On-Call Management</h1>
+      <p class="hero__subtitle">
+        A high-performance operations environment designed to work across massive engineering organizations without slowing down, dropping alerts, or breaking context.
+      </p>
+      
+      <div id="hero-cta" style="display:flex; justify-content:center; gap:1rem; margin-bottom: 2rem;">
+        
+      </div>
+      
+      <div style="font-size: 0.8125rem; color: var(--text-subtle);">
+        Free during beta &mdash; Available for Cloud &amp; On-Premise &middot; v2.4.1
+      </div>
+
+      
+      <div class="hero__video-wrapper fade-in" style="animation-delay: 0.2s; position:relative;">
+        <img src="demo-preview.jpg" alt="Soter Operations Platform Interactive Demo" class="hero__video" style="width:100%; height:auto; display:block; border-radius:inherit;">
+        <div style="position:absolute; bottom:1.25rem; right:1.25rem; background:rgba(17,17,17,0.85); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:#fff; padding:0.4rem 0.85rem; border-radius:var(--radius-pill); font-size:0.75rem; font-weight:600; display:flex; align-items:center; gap:0.5rem; box-shadow:0 4px 15px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.15);">
+          <span class="status-dot status-dot--healthy status-dot--pulse"></span>
+          Live Operations Console
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="container" style="margin-top: 4rem;">
+      <div class="grid grid-3">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:var(--text-main); margin-bottom:0.25rem;" class="mono">&lt; 30s</div>
+          <div class="text-subtle">Average TTA (Time to Acknowledge)</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:var(--text-main); margin-bottom:0.25rem;" class="mono">99.99%</div>
+          <div class="text-subtle">Escalation Delivery Reliability</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2rem; font-weight:700; color:var(--text-main); margin-bottom:0.25rem;" class="mono">0.0ms</div>
+          <div class="text-subtle">Routing Latency Overhead</div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="container" id="features" style="margin-top: 6rem;">
+      <h2 style="text-align:center; font-size: 2.5rem; margin-bottom: 3rem;">Engineering-grade capabilities</h2>
+      
+      <div class="two-col">
+        
+        <div class="card" style="position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-10px; right:10px; font-size:8rem; font-weight:800; color:var(--bg-base); z-index:0; line-height:1; user-select:none;">01</div>
+          <div style="position:relative; z-index:1;">
+            <h3 class="card__title">Instant codebase routing</h3>
+            <p class="card__text">Maps large-scale microservice architectures in seconds. Understands dependency edges, execution flow, and tier hierarchies for instant cross-team escalation.</p>
+          </div>
+        </div>
+
+        
+        <div class="card" style="position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-10px; right:10px; font-size:8rem; font-weight:800; color:var(--bg-base); z-index:0; line-height:1; user-select:none;">02</div>
+          <div style="position:relative; z-index:1;">
+            <h3 class="card__title">Deterministic SLA Timers</h3>
+            <p class="card__text">Every alert is tracked with immutable tabular countdowns. Breaches trigger automated tier-escalation rules across parallel responder groups without delay.</p>
+          </div>
+        </div>
+
+        
+        <div class="card" style="position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-10px; right:10px; font-size:8rem; font-weight:800; color:var(--bg-base); z-index:0; line-height:1; user-select:none;">03</div>
+          <div style="position:relative; z-index:1;">
+            <h3 class="card__title">Multi-tenant architecture</h3>
+            <p class="card__text">Designed for enterprise-scale B2B usage where tenant isolation, RBAC controls, and strict workspace separation are critical requirements.</p>
+          </div>
+        </div>
+
+        
+        <div class="card" style="position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-10px; right:10px; font-size:8rem; font-weight:800; color:var(--bg-base); z-index:0; line-height:1; user-select:none;">04</div>
+          <div style="position:relative; z-index:1;">
+            <h3 class="card__title">Immutable Audit Trail</h3>
+            <p class="card__text">Every action, from incident acknowledgment to team reassignment, is recorded with exact timestamps and user attribution for compliance.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div style="display:flex; justify-content:center; align-items:center; gap:1rem; margin-bottom:1rem;">
+        <img src="logo.png" alt="Logo" style="height:20px; border-radius:4px; filter:grayscale(100%); opacity:0.6;">
+        <span style="font-weight:600; color:var(--text-subtle);">Soter</span>
+      </div>
+      <p>&copy; 2026 Soter &bull; High-Performance Engineering Environment</p>
+    </div>
+  </footer>
+  <script>
+    // Session-aware CTA rendering for index.html
+    // Reads the same sessionStorage key used by all authenticated pages.
+    (function() {
+      var session = sessionStorage.getItem('current_user');
+      var loggedIn = false;
+      var userName = '';
+      if (session) {
+        try {
+          var user = JSON.parse(session);
+          if (user && user.id) {
+            loggedIn = true;
+            userName = user.name ? user.name.split(' ')[0] : 'Dashboard';
+          }
+        } catch(e) {}
+      }
+
+      var topbarCta = document.getElementById('topbar-cta');
+      var heroCta = document.getElementById('hero-cta');
+
+      if (loggedIn) {
+        var destination = (user && user.role === 'platform_superadmin') ? 'platform-admin.html' : 'dashboard.html';
+        var destLabel = (user && user.role === 'platform_superadmin') ? 'Platform Console' : 'Dashboard';
+        // Authenticated view — hide public auth buttons, show Dashboard / Console link
+        if (topbarCta) {
+          topbarCta.innerHTML =
+            '<span style="font-size:0.8rem; color:var(--text-subtle); margin-right:0.5rem;">Hi, ' + userName + '</span>' +
+            '<a href="' + destination + '" class="btn btn--primary btn--sm">Go to ' + destLabel + ' &rarr;</a>';
+        }
+        if (heroCta) {
+          heroCta.innerHTML =
+            '<a href="' + destination + '" class="btn btn--primary btn--lg">Open ' + destLabel + ' &rarr;</a>';
+        }
+      } else {
+        // Guest view — normal public CTA buttons
+        if (topbarCta) {
+          topbarCta.innerHTML =
+            '<a href="login.html" class="btn btn--outline btn--sm">Log In</a>' +
+            '<a href="signup.html" class="btn btn--primary btn--sm">Get Started</a>';
+        }
+        if (heroCta) {
+          heroCta.innerHTML =
+            '<a href="signup.html" class="btn btn--primary btn--lg">Start Free Trial</a>' +
+            '<a href="register.html" class="btn btn--outline btn--lg">Register your company &rarr;</a>';
+        }
+      }
+    })();
+  </script>
+
+</body>
+</html>
