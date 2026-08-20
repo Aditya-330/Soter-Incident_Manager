@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Platform Superadmin Console — Soter">
+  <title>Platform Superadmin — Soter</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body class="app-body">
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    var user = getCurrentUser();
+    if (!user || user.role !== 'platform_superadmin') {
+      window.location.href = 'login.html';
+    }
+  </script>
+
+  
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <img src="logo.png" alt="Logo">
+      <span class="sidebar__brand-name">Soter</span>
+    </a>
+
+    <nav class="sidebar__nav">
+      <div class="sidebar__section-label">Platform Control</div>
+      <a href="platform-admin.html" class="sidebar__link sidebar__link--active">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        Company Approvals
+      </a>
+    </nav>
+
+    <div class="sidebar__user" id="sidebar-user"></div>
+  </aside>
+
+  
+  <main class="app-main fade-in">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.75rem;">
+      <div>
+        <h1 style="font-size:1.65rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:0.15rem;">Platform Superadmin Console</h1>
+        <p class="text-muted" style="font-size:0.8125rem;">Manage company onboarding applications, approval states, and tenant workspace inspection</p>
+      </div>
+      <button class="btn btn--outline btn--sm" onclick="loadPlatformData()">Refresh Data</button>
+    </div>
+
+    
+    <div class="grid grid-4" style="margin-bottom:2rem;" id="platform-stats">
+      
+    </div>
+
+    
+    <div class="card" style="padding:1rem 1.25rem; margin-bottom:1.5rem;">
+      <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+        <div style="flex:1; min-width:200px;">
+          <input type="text" class="form-input" id="search-companies" placeholder="Search by company or admin name..." style="height:38px; border-radius:var(--radius-sm);">
+        </div>
+        <select class="form-select form-select--sm" id="filter-company-status" style="min-width:180px; width:auto; height:38px;">
+          <option value="ALL" selected>All Companies (All Statuses)</option>
+          <option value="pending">Pending Review</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+    </div>
+
+    
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="padding:1.25rem 1.5rem; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="font-size:1.1rem; font-weight:600;">Registered Companies</h2>
+        <span class="badge" id="company-count-badge">0 Companies</span>
+      </div>
+      <div id="companies-table-container" style="overflow-x:auto;">
+        
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/utils.js"></script>
+  <script>
+    var allCompanies = [];
+    var allUsers = [];
+    var allInviteCodes = [];
+
+    async function loadPlatformData() {
+      try {
+        allCompanies = await api.get('companies');
+        allUsers = await api.get('users');
+        allInviteCodes = await api.get('inviteCodes');
+      } catch(e) {
+        console.warn('Error fetching platform data:', e);
+        allCompanies = [];
+        allUsers = [];
+        allInviteCodes = [];
+      }
+      renderPlatformStats();
+      renderCompaniesTable();
+    }
+
+    function renderPlatformStats() {
+      var container = document.getElementById('platform-stats');
+      if (!container) return;
+
+      var total = allCompanies.length;
+      var pending = allCompanies.filter(function(c) { return c.status === 'pending'; }).length;
+      var approved = allCompanies.filter(function(c) { return c.status === 'approved'; }).length;
+      var rejected = allCompanies.filter(function(c) { return c.status === 'rejected'; }).length;
+
+      container.innerHTML =
+        '<div class="card" style="text-align:center; padding:1.25rem 1rem;">' +
+          '<div style="font-size:1.75rem; font-weight:700; color:var(--text-main);" class="mono">' + total + '</div>' +
+          '<div class="text-subtle" style="font-size:0.75rem;">Total Applications</div>' +
+        '</div>' +
+        '<div class="card" style="text-align:center; padding:1.25rem 1rem;">' +
+          '<div style="font-size:1.75rem; font-weight:700; color:var(--status-medium);" class="mono">' + pending + '</div>' +
+          '<div class="text-subtle" style="font-size:0.75rem;">Pending Review</div>' +
+        '</div>' +
+        '<div class="card" style="text-align:center; padding:1.25rem 1rem;">' +
+          '<div style="font-size:1.75rem; font-weight:700; color:var(--status-healthy);" class="mono">' + approved + '</div>' +
+          '<div class="text-subtle" style="font-size:0.75rem;">Approved Workspaces</div>' +
+        '</div>' +
+        '<div class="card" style="text-align:center; padding:1.25rem 1rem;">' +
+          '<div style="font-size:1.75rem; font-weight:700; color:var(--status-critical);" class="mono">' + rejected + '</div>' +
+          '<div class="text-subtle" style="font-size:0.75rem;">Rejected / Inactive</div>' +
+        '</div>';
+    }
+
+    function renderCompaniesTable() {
+      var container = document.getElementById('companies-table-container');
+      if (!container) return;
+
+      var searchVal = (document.getElementById('search-companies').value || '').toLowerCase();
+      var filterStatus = document.getElementById('filter-company-status').value;
+
+      var filtered = allCompanies.filter(function(c) {
+        var status = c.status || 'pending';
+        if (filterStatus !== 'ALL' && status !== filterStatus) return false;
+        if (searchVal) {
+          var nameMatch = (c.name || '').toLowerCase().includes(searchVal);
+          var adminMatch = (c.adminName || '').toLowerCase().includes(searchVal) || (c.adminEmail || '').toLowerCase().includes(searchVal);
+          return nameMatch || adminMatch;
+        }
+        return true;
+      });
+
+      document.getElementById('company-count-badge').textContent = filtered.length + ' Companies';
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="padding:2.5rem; text-align:center;" class="text-muted">No companies found matching the current filter.</div>';
+        return;
+      }
+
+      var html =
+        '<table class="table" style="width:100%; border-collapse: collapse; text-align: left;">' +
+          '<thead>' +
+            '<tr style="border-bottom: 1px solid var(--border-color); background:var(--bg-base);">' +
+              '<th style="padding: 0.85rem 1.25rem;">Company Workspace</th>' +
+              '<th style="padding: 0.85rem 1.25rem;">Director / Admin Contact</th>' +
+              '<th style="padding: 0.85rem 1.25rem;">Status</th>' +
+              '<th style="padding: 0.85rem 1.25rem;">Registered</th>' +
+              '<th style="padding: 0.85rem 1.25rem; text-align:right;">Actions</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>';
+
+      filtered.forEach(function(comp) {
+        var status = comp.status || 'pending';
+        var statusBadge = '';
+        if (status === 'approved') {
+          statusBadge = '<span class="badge badge--healthy">APPROVED</span>';
+        } else if (status === 'rejected') {
+          statusBadge = '<span class="badge badge--critical">REJECTED</span>';
+        } else {
+          statusBadge = '<span class="badge badge--medium">PENDING REVIEW</span>';
+        }
+
+        var adminUser = allUsers.find(function(u) { return u.companyId === comp.id && (u.role === 'company_admin' || u.role === 'superadmin'); });
+        var adminName = comp.adminName || (adminUser ? adminUser.name : 'Unknown');
+        var adminEmail = comp.adminEmail || (adminUser ? adminUser.email : 'N/A');
+        var jobTitle = comp.jobTitle ? ' &bull; ' + comp.jobTitle : '';
+
+        var timeStr = comp.createdAt ? (typeof getRelativeTime === 'function' ? getRelativeTime(comp.createdAt) : new Date(comp.createdAt).toLocaleDateString()) : 'N/A';
+
+        var actionBtns = '';
+        var viewDetailsBtn = '<button class="btn btn--sm btn--outline" style="margin-right:6px;" onclick="viewCompanyDetails(\'' + comp.id + '\')">View Details</button>';
+
+        if (status === 'pending') {
+          actionBtns =
+            viewDetailsBtn +
+            '<button class="btn btn--sm btn--primary" style="margin-right:6px;" onclick="approveCompany(\'' + comp.id + '\', \'' + (comp.name || '').replace(/'/g, "\\'") + '\')">Approve</button>' +
+            '<button class="btn btn--sm btn--danger" onclick="rejectCompany(\'' + comp.id + '\')">Reject</button>';
+        } else if (status === 'approved') {
+          actionBtns =
+            viewDetailsBtn +
+            '<button class="btn btn--sm btn--outline" style="margin-right:6px;" onclick="emailCredentialsModal(\'' + comp.id + '\')">Credentials</button>' +
+            '<button class="btn btn--sm btn--primary" style="margin-right:6px;" onclick="impersonateCompany(\'' + comp.id + '\')">Open Dashboard</button>' +
+            '<button class="btn btn--sm btn--danger" onclick="rejectCompany(\'' + comp.id + '\')">Revoke</button>';
+        } else {
+          actionBtns =
+            viewDetailsBtn +
+            '<button class="btn btn--sm btn--primary" onclick="approveCompany(\'' + comp.id + '\', \'' + (comp.name || '').replace(/'/g, "\\'") + '\')">Re-Approve</button>';
+        }
+
+        html +=
+          '<tr style="border-bottom: 1px solid var(--border-color);">' +
+            '<td style="padding: 1rem 1.25rem;">' +
+              '<a href="javascript:void(0)" onclick="impersonateCompany(\'' + comp.id + '\')" style="font-size:0.95rem; font-weight:700; color:var(--text-main); text-decoration:none; display:inline-block;" title="Click to open company dashboard">' + comp.name + ' &rarr;</a>' +
+              '<div style="font-size:0.75rem; color:var(--text-subtle); font-family:var(--font-mono); margin-top:2px;">ID: ' + comp.id + ' &bull; ' + (comp.size || 'N/A') + '</div>' +
+            '</td>' +
+            '<td style="padding: 1rem 1.25rem;">' +
+              '<div style="font-weight:600;">' + adminName + '<span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">' + jobTitle + '</span></div>' +
+              '<div style="font-size:0.75rem; color:var(--text-muted);">' + adminEmail + '</div>' +
+            '</td>' +
+            '<td style="padding: 1rem 1.25rem;">' + statusBadge + '</td>' +
+            '<td style="padding: 1rem 1.25rem; font-size:0.85rem; color:var(--text-muted);">' + timeStr + '</td>' +
+            '<td style="padding: 1rem 1.25rem; text-align:right;">' + actionBtns + '</td>' +
+          '</tr>';
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function viewCompanyDetails(companyId) {
+      var comp = allCompanies.find(function(c) { return c.id === companyId; });
+      if (!comp) return;
+
+      var overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.id = 'details-modal';
+      overlay.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:1000; display:flex; align-items:center; justify-content:center; padding:1.5rem;';
+
+      var modal = document.createElement('div');
+      modal.className = 'card';
+      modal.style.cssText = 'max-width:720px; width:100%; max-height:88vh; overflow-y:auto; padding:2rem; border-radius:var(--radius-lg); position:relative; box-shadow:var(--shadow-lg);';
+
+      var statusBadge = comp.status === 'approved' 
+        ? '<span class="badge badge--healthy">APPROVED</span>' 
+        : (comp.status === 'rejected' ? '<span class="badge badge--critical">REJECTED</span>' : '<span class="badge badge--medium">PENDING REVIEW</span>');
+
+      modal.innerHTML =
+        '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; border-bottom:1px solid var(--border-light); padding-bottom:1rem;">' +
+          '<div>' +
+            '<h2 style="font-size:1.35rem; font-weight:800; margin-bottom:0.25rem;">' + comp.name + '</h2>' +
+            '<div style="font-size:0.8rem; color:var(--text-muted);">Application Review &bull; Status: ' + statusBadge + '</div>' +
+          '</div>' +
+          '<button class="btn btn--outline btn--sm" id="close-modal-btn">&times; Close</button>' +
+        '</div>' +
+
+        '<div style="display:flex; flex-direction:column; gap:1.25rem; font-size:0.875rem;">' +
+          
+          '' +
+          '<div style="background:var(--bg-base); padding:1rem 1.25rem; border-radius:var(--radius-sm);">' +
+            '<h3 style="font-size:0.95rem; font-weight:700; color:var(--text-main); margin-bottom:0.75rem;">1. Company Details</h3>' +
+            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">' +
+              '<div><strong>Website:</strong> ' + (comp.website ? '<a href="' + comp.website + '" target="_blank" style="color:var(--status-low);">' + comp.website + '</a>' : 'N/A') + '</div>' +
+              '<div><strong>Company Size:</strong> ' + (comp.size || 'N/A') + '</div>' +
+              '<div><strong>Industry:</strong> ' + (comp.industry || 'N/A') + '</div>' +
+              '<div><strong>Location:</strong> ' + (comp.location || 'N/A') + '</div>' +
+            '</div>' +
+          '</div>' +
+
+          '' +
+          '<div style="background:var(--bg-base); padding:1rem 1.25rem; border-radius:var(--radius-sm);">' +
+            '<h3 style="font-size:0.95rem; font-weight:700; color:var(--text-main); margin-bottom:0.75rem;">2. Contact Person / Director</h3>' +
+            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">' +
+              '<div><strong>Name:</strong> ' + (comp.adminName || 'N/A') + '</div>' +
+              '<div><strong>Email:</strong> ' + (comp.adminEmail || 'N/A') + '</div>' +
+              '<div><strong>Job Title:</strong> ' + (comp.jobTitle || 'N/A') + '</div>' +
+              '<div><strong>Phone:</strong> ' + (comp.phone || 'N/A') + '</div>' +
+            '</div>' +
+          '</div>' +
+
+          '' +
+          '<div style="background:var(--bg-base); padding:1rem 1.25rem; border-radius:var(--radius-sm);">' +
+            '<h3 style="font-size:0.95rem; font-weight:700; color:var(--text-main); margin-bottom:0.75rem;">3. Business Information</h3>' +
+            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">' +
+              '<div><strong>Number of Customers:</strong> ' + (comp.numCustomers || 'N/A') + '</div>' +
+              '<div><strong>Annual Revenue:</strong> ' + (comp.revenueRange || 'N/A') + '</div>' +
+              '<div><strong>Employees:</strong> ' + (comp.numEmployees || 'N/A') + '</div>' +
+              '<div><strong>Expected Opportunity:</strong> ' + (comp.businessOpportunity || 'N/A') + '</div>' +
+              '<div style="grid-column:1/-1;"><strong>Key Products/Services:</strong> ' + (comp.keyProducts || 'N/A') + '</div>' +
+              '<div style="grid-column:1/-1;"><strong>Tech Partnerships:</strong> ' + (comp.techPartnerships || 'None') + '</div>' +
+            '</div>' +
+          '</div>' +
+
+          '' +
+          '<div style="background:var(--bg-base); padding:1rem 1.25rem; border-radius:var(--radius-sm);">' +
+            '<h3 style="font-size:0.95rem; font-weight:700; color:var(--text-main); margin-bottom:0.75rem;">4. Technical Information</h3>' +
+            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">' +
+              '<div><strong>Integration Type:</strong> ' + (comp.integrationType || 'N/A') + '</div>' +
+              '<div><strong>Target Products:</strong> ' + (comp.productsToIntegrate || 'N/A') + '</div>' +
+              '<div><strong>Tech Contact:</strong> ' + (comp.techContact || 'N/A') + '</div>' +
+              '<div><strong>Tech Stack:</strong> ' + (comp.techStack || 'N/A') + '</div>' +
+              '<div style="grid-column:1/-1;"><strong>API Requirements:</strong> ' + (comp.integrationRequirements || 'None specified') + '</div>' +
+            '</div>' +
+          '</div>' +
+
+        '</div>' +
+
+        '<div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.75rem;">' +
+          (comp.status === 'pending' ? '<button class="btn btn--primary" id="modal-approve-btn">Approve Application</button>' : '') +
+          (comp.status === 'approved' ? '<button class="btn btn--outline" onclick="emailCredentialsModal(\'' + comp.id + '\')">View Credentials</button>' : '') +
+          (comp.status === 'approved' ? '<button class="btn btn--primary" onclick="impersonateCompany(\'' + comp.id + '\')">Open Dashboard</button>' : '') +
+          (comp.status === 'pending' ? '<button class="btn btn--danger" id="modal-reject-btn">Reject</button>' : '') +
+        '</div>';
+
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+
+      document.getElementById('close-modal-btn').onclick = function() { overlay.remove(); };
+      overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+
+      var approveBtn = document.getElementById('modal-approve-btn');
+      if (approveBtn) {
+        approveBtn.onclick = async function() {
+          overlay.remove();
+          await approveCompany(comp.id, comp.name);
+        };
+      }
+
+      var rejectBtn = document.getElementById('modal-reject-btn');
+      if (rejectBtn) {
+        rejectBtn.onclick = async function() {
+          overlay.remove();
+          await rejectCompany(comp.id);
+        };
+      }
+    }
+
+    function emailCredentialsModal(companyId) {
+      var comp = allCompanies.find(function(c) { return c.id === companyId; });
+      if (!comp) return;
+
+      var adminUser = allUsers.find(function(u) { return u.companyId === comp.id && (u.role === 'company_admin' || u.role === 'superadmin'); });
+      var adminEmail = comp.adminEmail || (adminUser ? adminUser.email : '');
+      var adminName = comp.adminName || (adminUser ? adminUser.name : 'Director');
+      var tempPassword = adminUser ? (adminUser.password || 'admin123') : 'admin123';
+      
+      var inviteCodeObj = allInviteCodes.find(function(ic) { return ic.companyId === comp.id; });
+      var inviteCode = inviteCodeObj ? inviteCodeObj.code : 'INV-WELCOME';
+
+      var loginUrl = window.location.origin + '/login.html';
+
+      var emailSubject = 'Your Soter Organization Workspace is Ready — ' + comp.name;
+      var emailBody = 
+        'Hi ' + adminName + ',\n\n' +
+        'Great news! Your workspace application for "' + comp.name + '" has been approved by the platform team.\n\n' +
+        'Here are your login credentials to access your dedicated on-call management console:\n\n' +
+        '  • Login URL: ' + loginUrl + '\n' +
+        '  • Admin Email: ' + adminEmail + '\n' +
+        '  • Temporary Password: ' + tempPassword + '\n' +
+        '  • Team Invite Code: ' + inviteCode + '\n\n' +
+        'You can now log in, configure your services and on-call teams, and invite your engineering responders.\n\n' +
+        'Best regards,\n' +
+        'Soter Platform Team';
+
+      var mailtoHref = 'mailto:' + encodeURIComponent(adminEmail) + '?subject=' + encodeURIComponent(emailSubject) + '&body=' + encodeURIComponent(emailBody);
+
+      var overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.id = 'credentials-modal';
+      overlay.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:1000; display:flex; align-items:center; justify-content:center; padding:1.5rem;';
+
+      var modal = document.createElement('div');
+      modal.className = 'card';
+      modal.style.cssText = 'max-width:640px; width:100%; max-height:88vh; overflow-y:auto; padding:2rem; border-radius:var(--radius-lg); position:relative; box-shadow:var(--shadow-lg);';
+
+      modal.innerHTML =
+        '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; border-bottom:1px solid var(--border-light); padding-bottom:0.75rem;">' +
+          '<div>' +
+            '<h2 style="font-size:1.25rem; font-weight:800; margin-bottom:0.2rem;">Director Credentials &bull; ' + comp.name + '</h2>' +
+            '<p class="text-muted" style="font-size:0.8rem; margin:0;">Send these onboarding credentials to the company director via email</p>' +
+          '</div>' +
+          '<button class="btn btn--outline btn--sm" id="close-cred-modal-btn">&times; Close</button>' +
+        '</div>' +
+
+        '<div style="background:var(--bg-base); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1.25rem; margin-bottom:1.5rem;">' +
+          '<div style="display:grid; grid-template-columns:140px 1fr; gap:0.6rem; font-size:0.875rem;">' +
+            '<span style="color:var(--text-muted); font-weight:600;">Director Name:</span>' +
+            '<strong>' + adminName + '</strong>' +
+            '<span style="color:var(--text-muted); font-weight:600;">Director Email:</span>' +
+            '<span class="mono" style="color:var(--text-main); font-weight:600;">' + adminEmail + '</span>' +
+            '<span style="color:var(--text-muted); font-weight:600;">Temp Password:</span>' +
+            '<span class="mono" style="color:var(--status-healthy); font-weight:700; background:rgba(34,197,94,0.1); padding:2px 8px; border-radius:4px; display:inline-block; width:fit-content;">' + tempPassword + '</span>' +
+            '<span style="color:var(--text-muted); font-weight:600;">Team Invite Code:</span>' +
+            '<span class="mono" style="color:var(--text-main); font-weight:600;">' + inviteCode + '</span>' +
+            '<span style="color:var(--text-muted); font-weight:600;">Login Portal:</span>' +
+            '<a href="' + loginUrl + '" target="_blank" style="color:var(--status-low); word-break:break-all;">' + loginUrl + '</a>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="margin-bottom:1.5rem;">' +
+          '<label class="form-label" style="font-weight:600; margin-bottom:0.4rem; display:flex; justify-content:space-between;">' +
+            '<span>Formatted Email Draft:</span>' +
+            '<button class="btn btn--sm btn--outline" id="copy-email-draft-btn" style="height:24px; font-size:0.7rem; padding:0 0.5rem;">Copy Text</button>' +
+          '</label>' +
+          '<textarea id="email-draft-text" class="form-input mono" style="width:100%; height:160px; font-size:0.775rem; line-height:1.4; resize:none;" readonly>' + emailBody + '</textarea>' +
+        '</div>' +
+
+        '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:gap:0.75rem;">' +
+          '<a href="' + mailtoHref + '" class="btn btn--primary" style="display:inline-flex; align-items:center;">' +
+            'Open in Email App' +
+          '</a>' +
+          '<button class="btn btn--outline" onclick="impersonateCompany(\'' + comp.id + '\')">' +
+            'Open Company Dashboard' +
+          '</button>' +
+        '</div>';
+
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+
+      document.getElementById('close-cred-modal-btn').onclick = function() { overlay.remove(); };
+      overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+
+      document.getElementById('copy-email-draft-btn').onclick = function() {
+        var copyText = document.getElementById('email-draft-text');
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value);
+        this.textContent = 'Copied!';
+        var self = this;
+        setTimeout(function() { self.textContent = 'Copy Text'; }, 2000);
+      };
+    }
+
+    async function approveCompany(companyId, companyName) {
+      try {
+        await api.patch('companies', companyId, { status: 'approved' });
+
+        // Ensure company has an invite code
+        var existingCodes = await api.get('inviteCodes', { companyId: companyId });
+        if (existingCodes.length === 0) {
+          var initialToken = 'INV-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+          await api.post('inviteCodes', {
+            id: generateId(),
+            companyId: companyId,
+            code: initialToken,
+            createdAt: new Date().toISOString()
+          });
+        }
+
+        showToast('Company "' + companyName + '" approved successfully!', 'success');
+        await loadPlatformData();
+
+        // Immediately open the email credentials modal so Superadmin can mail the director
+        emailCredentialsModal(companyId);
+      } catch(e) {
+        showToast('Error approving company: ' + e.message, 'error');
+      }
+    }
+
+    async function rejectCompany(companyId) {
+      if (confirm('Are you sure you want to reject / deactivate this company workspace?')) {
+        try {
+          await api.patch('companies', companyId, { status: 'rejected' });
+          showToast('Company status updated to rejected.', 'info');
+          await loadPlatformData();
+        } catch(e) {
+          showToast('Error updating company: ' + e.message, 'error');
+        }
+      }
+    }
+
+    function impersonateCompany(companyId) {
+      sessionStorage.setItem('impersonated_company_id', companyId);
+      window.location.href = 'dashboard.html';
+    }
+
+    // Init
+    (async function() {
+      var user = getCurrentUser();
+      var sidebarUser = document.getElementById('sidebar-user');
+      if (user && sidebarUser) {
+        sidebarUser.innerHTML =
+          '<div class="sidebar__user-info">' +
+            '<div style="flex:1; min-width:0;">' +
+              '<div class="sidebar__user-name">' + user.name + '</div>' +
+              '<span class="badge badge--platform_superadmin" style="font-size:0.65rem;">Platform Superadmin</span>' +
+            '</div>' +
+          '</div>' +
+          '<button class="sidebar__logout" onclick="logout()">Sign out</button>';
+      }
+
+      document.getElementById('search-companies').addEventListener('input', renderCompaniesTable);
+      document.getElementById('filter-company-status').addEventListener('change', renderCompaniesTable);
+
+      await loadPlatformData();
+    })();
+  </script>
+</body>
+</html>
