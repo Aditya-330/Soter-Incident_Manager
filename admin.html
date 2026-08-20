@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Administration — Soter">
+  <title>Admin Panel — Soter</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body class="app-body">
+
+  <script src="js/storage.js?v=3"></script>
+  <script src="js/auth.js?v=3"></script>
+  <script>
+    requireLogin();
+    if (!hasPermission('teamadmin')) {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+
+  
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <img src="logo.png" alt="Logo">
+      <span class="sidebar__brand-name">Soter</span>
+    </a>
+
+    <nav class="sidebar__nav">
+      <div class="sidebar__section-label">Workspace</div>
+      <a href="dashboard.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Dashboard
+      </a>
+      <a href="trigger.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        Report Incident
+      </a>
+      <a href="services.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+        Services
+      </a>
+      <a href="teams.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        Teams
+      </a>
+      <a href="audit.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Audit Log
+      </a>
+      <a href="admin.html" class="sidebar__link sidebar__link--active">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Admin Panel
+      </a>
+    </nav>
+
+    <div class="sidebar__user" id="sidebar-user"></div>
+  </aside>
+
+  
+  <main class="app-main fade-in">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.75rem;">
+      <div>
+        <h1 style="font-size:1.65rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:0.15rem;">Organization Administration</h1>
+        <p class="text-muted" style="font-size:0.8125rem;">Manage teams, microservice dependency trees, member assignments, and invite tokens</p>
+      </div>
+      <button class="btn btn--outline btn--sm" onclick="exportToJSON()">Export Data</button>
+    </div>
+
+    
+    <div class="two-col" style="gap: 1.5rem; margin-bottom: 2rem; align-items: start;">
+
+      
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+        
+        <div class="card" id="admin-create-team-card">
+          <h2 class="card__title" style="margin-bottom: 0.2rem; font-size:1.05rem;">1. Create Team</h2>
+          <p class="card__text" style="margin-bottom: 1rem; font-size:0.8125rem;">Define engineering groups responsible for service rotations.</p>
+          <form id="add-team-form">
+            <div class="form-group">
+              <label class="form-label" for="team-name">Team Name</label>
+              <input class="form-input" type="text" id="team-name" placeholder="e.g. Platform Engineering" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="team-description">Description &amp; Domain</label>
+              <textarea class="form-input form-textarea" id="team-description" placeholder="What services and infrastructure does this team manage?"></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary" style="width:100%;">Create Team</button>
+          </form>
+        </div>
+
+        
+        <div class="card">
+          <h2 class="card__title" style="margin-bottom: 0.2rem; font-size:1.05rem;">2. Provision Developer Account</h2>
+          <p class="card__text" style="margin-bottom: 1rem; font-size:0.8125rem;">Create member login credentials and assign escalation tier.</p>
+          <form id="admin-provision-member-form">
+            <div class="two-col" style="gap:0.75rem; margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="admin-member-name">Developer Name</label>
+                <input class="form-input" type="text" id="admin-member-name" placeholder="e.g. Maya Lin" required>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="admin-member-email">Login Email</label>
+                <input class="form-input" type="email" id="admin-member-email" placeholder="maya@company.com" required>
+              </div>
+            </div>
+
+            <div class="two-col" style="gap:0.75rem; margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="admin-member-password">Password</label>
+                <input class="form-input" type="password" id="admin-member-password" placeholder="Create password" required>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="admin-member-role">On-Call Role / Tier</label>
+                <select class="form-select" id="admin-member-role" required>
+                  <option value="junior" selected>SDE I (Tier 1 — Junior Responder)</option>
+                  <option value="senior">SDE II (Tier 2 — Senior Responder)</option>
+                  <option value="teamadmin">Tech Lead (Tier 3 — Team Admin)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label class="form-label" for="admin-member-team">Assign to Team</label>
+              <select class="form-select" id="admin-member-team" required>
+                
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn--primary" style="width:100%;">Create &amp; Provision Developer</button>
+          </form>
+        </div>
+
+        
+        <div id="invite-codes-section" style="display:none;">
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.875rem;">
+              <div>
+                <h3 class="card__title" style="font-size:1rem; margin-bottom:0.15rem;">Company Invite Tokens</h3>
+                <p class="card__text" style="margin-bottom:0; font-size:0.75rem;">Share tokens for self-service member onboarding</p>
+              </div>
+              <button class="btn btn--sm btn--primary" onclick="generateInviteCode()">+ Generate</button>
+            </div>
+            <div id="invite-codes-list">
+              
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+        
+        <div class="card">
+          <h2 class="card__title" style="margin-bottom: 0.2rem; font-size:1.05rem;">3. Register Service</h2>
+          <p class="card__text" style="margin-bottom: 1rem; font-size:0.8125rem;">Configure real health-check monitoring for a microservice.</p>
+          <form id="add-service-form">
+            <div class="form-group">
+              <label class="form-label" for="service-name">Service Name</label>
+              <input class="form-input" type="text" id="service-name" placeholder="e.g. Payment API" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="service-team">Owning Team</label>
+              <select class="form-select" id="service-team" required>
+                
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="service-health-endpoint">Health Endpoint URL</label>
+              <input class="form-input" type="text" id="service-health-endpoint" placeholder="https://api.example.com/health" required>
+            </div>
+            <div class="two-col" style="gap:0.625rem; grid-template-columns: 1fr 1fr; margin-bottom:0.875rem;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="service-check-method">Check Method</label>
+                <select class="form-select" id="service-check-method" onchange="var g = document.getElementById('service-body-group'); if (g) g.style.display = this.value === 'GET' ? 'none' : 'block';">
+                  <option value="GET" selected>GET (default)</option>
+                  <option value="POST">POST</option>
+                  <option value="PUT">PUT</option>
+                  <option value="DELETE">DELETE</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="service-check-interval">Check Interval</label>
+                <select class="form-select" id="service-check-interval">
+                  <option value="120" selected>Every 2 min (default)</option>
+                  <option value="60">Every 1 min</option>
+                  <option value="300">Every 5 min</option>
+                  <option value="900">Every 15 min</option>
+                  <option value="1800">Every 30 min</option>
+                  <option value="30">Every 30 sec (testing)</option>
+                  <option value="15">Every 15 sec (testing)</option>
+                  <option value="1">Every 1 sec (testing)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" id="service-body-group" style="margin-bottom:0.875rem; display:none;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+                <label class="form-label" for="service-body" style="margin:0;">Request Body (JSON Schema / Payload)</label>
+                <span style="font-size:0.7rem; color:var(--text-subtle);">Optional JSON payload sent with probe</span>
+              </div>
+              <textarea class="form-input mono" id="service-body" rows="3" style="font-size:0.775rem; font-family:monospace; resize:vertical;" placeholder='{\n  "action": "health_check",\n  "version": "1.0"\n}'></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Upstream Dependencies (optional)</label>
+              <div id="depends-on-list" style="max-height:120px; overflow-y:auto; padding:0.5rem; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                
+              </div>
+            </div>
+            <button type="submit" class="btn btn--primary" style="width:100%;">Register Service</button>
+          </form>
+        </div>
+
+        
+        <div class="card">
+          <h2 class="card__title" style="margin-bottom: 0.2rem; font-size:1.05rem;">4. Assign Existing Members</h2>
+          <p class="card__text" style="margin-bottom: 1rem; font-size:0.8125rem;">Map existing unassigned accounts into on-call engineering teams.</p>
+          <form id="add-member-form">
+            <div class="two-col" style="gap:0.625rem; grid-template-columns: 1fr 1fr; margin-bottom:0.875rem;">
+              <div>
+                <label class="form-label">Select User</label>
+                <select class="form-select" id="member-user" required>
+                  
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Target Team</label>
+                <select class="form-select" id="manage-team-select" required>
+                  
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn--primary" style="width:100%;">Assign to Team</button>
+          </form>
+        </div>
+
+        
+        <div class="card">
+          <h3 class="card__title" style="margin-bottom:0.625rem; font-size:1rem;">Current Team Roster</h3>
+          <div id="team-members-list">
+            
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <hr class="divider">
+
+    
+    <div class="section" style="margin-bottom: 2rem;">
+      <h2 class="section__title" style="margin-bottom: 0.875rem; font-size:1.15rem;">Organization User Directory</h2>
+      <div class="card" id="user-directory" style="overflow-x:auto; padding:0.5rem 1rem;">
+        
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    
+    <div class="two-col" style="gap: 1.5rem;">
+      <div class="section">
+        <h2 class="section__title" style="margin-bottom: 0.875rem; font-size:1.15rem;">Teams</h2>
+        <div id="admin-team-list" style="display:flex; flex-direction:column; gap:1rem;">
+          
+        </div>
+      </div>
+      <div class="section">
+        <h2 class="section__title" style="margin-bottom: 0.875rem; font-size:1.15rem;">Registered Services</h2>
+        <div id="admin-service-list" style="display:flex; flex-direction:column; gap:1rem;">
+          
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/teams.js?v=3"></script>
+  <script src="js/services.js?v=3"></script>
+  <script src="js/audit.js?v=3"></script>
+  <script src="js/admin.js?v=3"></script>
+  <script src="js/utils.js?v=3"></script>
+  <script>
+    (async function() {
+      // Sidebar user
+      var user = getCurrentUser();
+      var sidebarUser = document.getElementById('sidebar-user');
+      if (user && sidebarUser) {
+        var roleDisplay = user.role === 'company_admin' ? 'Company Admin' : (user.role === 'platform_superadmin' ? 'Platform Admin' : user.role.charAt(0).toUpperCase() + user.role.slice(1));
+        sidebarUser.innerHTML =
+          '<div class="sidebar__user-info">' +
+            '<div style="flex:1; min-width:0;">' +
+              '<div class="sidebar__user-name">' + user.name + '</div>' +
+              '<span class="badge badge--' + user.role + '" style="font-size:0.65rem;">' + roleDisplay + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<button class="sidebar__logout" onclick="logout()">Sign out</button>';
+      }
+
+      // Show platform admin return banner if impersonating
+      if (user && user.role === 'platform_superadmin') {
+        var mainEl = document.querySelector('.app-main');
+        if (mainEl) {
+          var banner = document.createElement('div');
+          banner.style.cssText = 'background:rgba(147,51,234,0.1); border:1px solid rgba(147,51,234,0.3); border-radius:var(--radius-sm); padding:0.6rem 1rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;';
+          banner.innerHTML =
+            '<span style="font-size:0.85rem; color:#9333ea; font-weight:600;">Viewing as Platform Superadmin (Admin Panel)</span>' +
+            '<a href="platform-admin.html" class="btn btn--sm btn--primary">Back to Platform Console &rarr;</a>';
+          mainEl.insertBefore(banner, mainEl.firstChild);
+        }
+      }
+
+      if (hasPermission('company_admin')) {
+        document.getElementById('invite-codes-section').style.display = 'block';
+      } else {
+        // Team admins (Tech Leads) cannot create teams
+        var createTeamCard = document.getElementById('admin-create-team-card');
+        if (createTeamCard) createTeamCard.style.display = 'none';
+      }
+
+      await initAdminPage();
+    })();
+  </script>
+
+</body>
+</html>

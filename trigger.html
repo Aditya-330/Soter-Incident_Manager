@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Report Incident — Soter">
+  <title>Report Incident — Soter</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body class="app-body">
+
+  
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script> requireLogin(); </script>
+
+  
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <img src="logo.png" alt="Logo">
+      <span class="sidebar__brand-name">Soter</span>
+    </a>
+
+    <nav class="sidebar__nav">
+      <div class="sidebar__section-label">Workspace</div>
+      <a href="dashboard.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Dashboard
+      </a>
+      <a href="trigger.html" class="sidebar__link sidebar__link--active">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+        Report Incident
+      </a>
+      <a href="services.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+        Services
+      </a>
+      <a href="teams.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        Teams
+      </a>
+      <a href="audit.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Audit Log
+      </a>
+      <div id="sidebar-admin-link"></div>
+    </nav>
+
+    <div class="sidebar__user" id="sidebar-user"></div>
+  </aside>
+
+  
+  <main class="app-main fade-in">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.75rem;">
+      <div>
+        <h1 style="font-size:1.65rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:0.15rem;">Report an Incident</h1>
+        <p class="text-muted" style="font-size:0.8125rem;">Manually report an issue that automated checks may not have caught.</p>
+      </div>
+    </div>
+
+    <div style="max-width: 640px;">
+      <div class="card">
+        <form id="trigger-form">
+          <div class="form-group">
+            <label class="form-label" for="incident-title">Incident Title</label>
+            <input class="form-input" type="text" id="incident-title" placeholder="e.g. Payment API returning 503 errors" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="incident-description">Description</label>
+            <textarea class="form-input form-textarea" id="incident-description" rows="4" placeholder="Describe the issue, symptoms, and any relevant context..." required></textarea>
+          </div>
+          <div class="two-col" style="gap:0.625rem; grid-template-columns: 1fr 1fr; margin-bottom:0.875rem;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="incident-severity">Severity</label>
+              <select class="form-select" id="incident-severity" required>
+                <option value="">-- Select severity --</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="incident-service">Target Service</label>
+              <select class="form-select" id="incident-service" required>
+                
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn--primary" style="width:100%; padding:0.75rem; margin-top:0.5rem;">
+            Submit Incident Report
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/teams.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/incidents.js?v=5"></script>
+  <script src="js/audit.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    (async function() {
+      // Render sidebar user block
+      var user = getCurrentUser();
+      var sidebarUser = document.getElementById('sidebar-user');
+      if (user && sidebarUser) {
+        var roleDisplay = user.role === 'company_admin' ? 'Company Admin' : (user.role === 'platform_superadmin' ? 'Platform Admin' : user.role.charAt(0).toUpperCase() + user.role.slice(1));
+        sidebarUser.innerHTML =
+          '<div class="sidebar__user-info">' +
+            '<div style="flex:1; min-width:0;">' +
+              '<div class="sidebar__user-name">' + user.name + '</div>' +
+              '<span class="badge badge--' + user.role + '" style="font-size:0.65rem;">' + roleDisplay + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<button class="sidebar__logout" onclick="logout()">Sign out</button>';
+      }
+
+      // Show admin link for teamadmin+
+      if (hasPermission('teamadmin')) {
+        document.getElementById('sidebar-admin-link').innerHTML =
+          '<a href="admin.html" class="sidebar__link">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>' +
+            'Admin Panel' +
+          '</a>';
+      }
+
+      // Populate service dropdown
+      await populateServiceDropdown('incident-service');
+
+      // Handle form submission
+      document.getElementById('trigger-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        var title = document.getElementById('incident-title').value.trim();
+        var description = document.getElementById('incident-description').value.trim();
+        var severity = document.getElementById('incident-severity').value;
+        var serviceId = document.getElementById('incident-service').value;
+
+        if (!title || !severity || !serviceId) {
+          showToast('All fields are required.', 'error');
+          return;
+        }
+
+        var btn = e.target.querySelector('button[type="submit"]');
+        btn.textContent = 'Creating incident...';
+        btn.disabled = true;
+
+        try {
+          // Use the EXACT SAME createIncident function as auto-detection
+          await createIncident(title, serviceId, severity, description);
+          showToast('Incident reported successfully!', 'success');
+
+          // Redirect to dashboard after a brief delay
+          setTimeout(function() {
+            window.location.href = 'dashboard.html';
+          }, 1500);
+        } catch (err) {
+          showToast('Error creating incident: ' + err.message, 'error');
+          btn.textContent = 'Submit Incident Report';
+          btn.disabled = false;
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
