@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Join Workspace — Soter">
+  <title>Join Workspace — Soter</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body class="fade-in">
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    if (sessionStorage.getItem('current_user')) {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <img src="logo.png" alt="Logo" class="auth-card__logo">
+      <h1 style="font-size:1.5rem; margin-bottom:0.25rem;">Join a Workspace</h1>
+      <p class="text-muted" style="margin-bottom:2rem; font-size:0.875rem;">Create your account using a company invite token</p>
+
+      <div id="signup-error" style="color:var(--status-critical); font-size:0.875rem; margin-bottom:1rem; text-align:center;"></div>
+
+      <form id="signup-form" style="text-align:left;">
+        <div class="form-group">
+          <label class="form-label" for="invite-token">Invite Token</label>
+          <input class="form-input" type="text" id="invite-token" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="name">Full Name</label>
+          <input class="form-input" type="text" id="name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Work Email</label>
+          <input class="form-input" type="email" id="email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-input" type="password" id="password" required>
+        </div>
+        <button type="submit" class="btn btn--primary" style="width:100%; margin-top:0.5rem; padding: 0.75rem;">Create Account</button>
+      </form>
+
+      <div style="margin-top:2rem; font-size:0.8125rem; color:var(--text-subtle);">
+        Already have an account? 
+        <a href="login.html" style="color:var(--text-main); font-weight:500;">Log in here</a>.
+      </div>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var err = document.getElementById('signup-error');
+      err.textContent = '';
+      
+      const btn = e.target.querySelector('button');
+      const ogText = btn.textContent;
+      btn.textContent = 'Verifying...';
+      btn.disabled = true;
+
+      try {
+        const res = await signup(
+          document.getElementById('name').value,
+          document.getElementById('email').value,
+          document.getElementById('password').value,
+          'junior',
+          document.getElementById('invite-token').value,
+          null
+        );
+        if (res.success) {
+          sessionStorage.setItem('current_user', JSON.stringify(res.user));
+          window.location.href = 'dashboard.html';
+        } else {
+          err.textContent = (res && res.error) ? res.error : 'Invalid invite token or email already in use.';
+          btn.textContent = ogText;
+          btn.disabled = false;
+        }
+      } catch(ex) {
+        err.textContent = 'Connection error. Please try again.';
+        btn.textContent = ogText;
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

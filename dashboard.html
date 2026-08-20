@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Operations Console — Soter">
+  <title>Operations Console — Soter</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body class="app-body">
+
+  
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script> requireLogin(); </script>
+
+  
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <img src="logo.png" alt="Logo">
+      <span class="sidebar__brand-name">Soter</span>
+    </a>
+
+    <nav class="sidebar__nav">
+      <div class="sidebar__section-label">Workspace</div>
+      <a href="dashboard.html" class="sidebar__link sidebar__link--active">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Dashboard
+      </a>
+      <a href="trigger.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+        Report Incident
+      </a>
+      <a href="services.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+        Services
+      </a>
+      <a href="teams.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        Teams
+      </a>
+      <a href="audit.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Audit Log
+      </a>
+      
+      <div id="sidebar-admin-link"></div>
+    </nav>
+
+    <div class="sidebar__user" id="sidebar-user">
+      
+    </div>
+  </aside>
+
+  
+  <main class="app-main fade-in">
+
+    
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h1 style="font-size:2rem; font-weight:700; letter-spacing:-0.04em; margin-bottom:0.25rem;">Operations Console</h1>
+        <p class="text-muted" style="font-size:0.875rem;">Real-time service health, cross-team escalation paths, and SLA tracking.</p>
+      </div>
+      <div>
+        <span class="badge" id="dashboard-company-name" style="padding:0.4rem 0.85rem; font-size:0.8125rem; font-weight:600; text-transform:none; letter-spacing:0; background:var(--bg-surface); box-shadow:var(--shadow-sm);"></span>
+      </div>
+    </div>
+
+    
+    <div class="grid grid-4" style="margin-bottom:2rem;" id="stats-bar">
+      
+    </div>
+
+    
+    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:2rem; align-items:start;">
+
+      
+      <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+        
+        <div class="card" style="padding:1rem 1.25rem;">
+          <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px; position:relative;">
+              <svg style="position:absolute; left:0.75rem; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--text-subtle);" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <input type="text" class="form-input" id="search-incidents" placeholder="Search incidents, services..." style="padding-left:2.5rem; height:38px; border-radius:var(--radius-sm);">
+            </div>
+            <select class="form-select form-select--sm" id="filter-status" style="min-width:145px; width:auto; height:38px;">
+              <option value="ALL">All Statuses</option>
+              <option value="open">Open</option>
+              <option value="acknowledged">Acknowledged</option>
+              <option value="resolved">Resolved</option>
+            </select>
+            <select class="form-select form-select--sm" id="filter-severity" style="min-width:155px; width:auto; height:38px;">
+              <option value="ALL">All Severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+        </div>
+
+        
+        <div class="card" style="padding:0; overflow:hidden;">
+          <div style="padding:1.25rem 1.5rem; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="font-size:1.1rem; font-weight:600;">Incident Stream</h2>
+            <span class="badge" id="incident-count-badge">0 Open</span>
+          </div>
+          <div id="incident-list" style="padding:0.5rem 0;">
+            
+          </div>
+        </div>
+      </div>
+
+      
+      <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+        
+        <div class="card" style="padding:0; overflow:hidden;">
+          <div style="padding:1.25rem 1.5rem; border-bottom:1px solid var(--border-light); background:var(--bg-base);">
+            <h3 style="font-size:0.95rem; font-weight:600; display:flex; align-items:center; gap:0.5rem;">
+              <span class="status-dot status-dot--healthy status-dot--pulse"></span>
+              Live Service Health
+            </h3>
+          </div>
+          <div id="health-monitor-list" style="padding:1.25rem 1.5rem; font-size:0.875rem;">
+            
+          </div>
+        </div>
+
+        
+        <div class="card">
+          <h3 class="card__title" style="font-size:0.95rem; margin-bottom:0.75rem;">Active Responders</h3>
+          <div id="dashboard-team-summary" style="display:flex; flex-direction:column; gap:0.5rem;">
+            
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/teams.js?v=3"></script>
+  <script src="js/services.js?v=3"></script>
+  <script src="js/incidents.js?v=5"></script>
+  <script src="js/health.js?v=4"></script>
+  <script src="js/audit.js?v=3"></script>
+  <script src="js/utils.js?v=3"></script>
+  <script>
+    (async function() {
+      // Render sidebar user block
+      var user = getCurrentUser();
+      var sidebarUser = document.getElementById('sidebar-user');
+      if (user && sidebarUser) {
+        var roleDisplay = user.role === 'company_admin' ? 'Company Admin' : (user.role === 'platform_superadmin' ? 'Platform Admin' : user.role.charAt(0).toUpperCase() + user.role.slice(1));
+        sidebarUser.innerHTML =
+          '<div class="sidebar__user-info">' +
+            '<div style="flex:1; min-width:0;">' +
+              '<div class="sidebar__user-name">' + user.name + '</div>' +
+              '<span class="badge badge--' + user.role + '" style="font-size:0.65rem;">' + roleDisplay + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<button class="sidebar__logout" onclick="logout()">Sign out</button>';
+      }
+
+      // Show platform admin return banner if impersonating
+      if (user && user.role === 'platform_superadmin') {
+        var mainEl = document.querySelector('.app-main');
+        if (mainEl) {
+          var banner = document.createElement('div');
+          banner.style.cssText = 'background:rgba(147,51,234,0.1); border:1px solid rgba(147,51,234,0.3); border-radius:var(--radius-sm); padding:0.6rem 1rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;';
+          banner.innerHTML =
+            '<span style="font-size:0.85rem; color:#9333ea; font-weight:600;">Viewing as Platform Superadmin</span>' +
+            '<a href="platform-admin.html" class="btn btn--sm btn--primary">Back to Platform Console &rarr;</a>';
+          mainEl.insertBefore(banner, mainEl.firstChild);
+        }
+      }
+
+      // Show admin link for teamadmin+
+      if (hasPermission('teamadmin')) {
+        document.getElementById('sidebar-admin-link').innerHTML =
+          '<a href="admin.html" class="sidebar__link">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>' +
+            'Admin Panel' +
+          '</a>';
+      }
+
+      // Company name
+      var currentCompanyId = getCurrentCompanyId();
+      if (currentCompanyId) {
+        try {
+          var comp = await api.getById('companies', currentCompanyId);
+          if (comp) document.getElementById('dashboard-company-name').textContent = comp.name;
+        } catch(e) {}
+      }
+
+      // Empty-state prompts
+      var teams = await getAllTeams();
+      var services = await getAllServices();
+      var incidentListEl = document.getElementById('incident-list');
+      if (teams.length === 0) {
+        incidentListEl.innerHTML =
+          '<div class="card" style="text-align:center; padding:2rem;">' +
+            '<h3 style="margin-bottom:0.5rem; color:var(--text-main);">Welcome to Soter</h3>' +
+            '<p class="text-muted" style="margin-bottom:1rem;">Your workspace is ready but has no teams configured yet.</p>' +
+            (hasPermission('teamadmin') ?
+              '<a href="admin.html" class="btn btn--primary">Go to Admin Panel &rarr; Create Your First Team</a>' :
+              '<p class="text-muted">Ask your admin to create teams and assign services.</p>') +
+          '</div>';
+      } else if (services.length === 0) {
+        incidentListEl.innerHTML =
+          '<div class="card" style="text-align:center; padding:2rem;">' +
+            '<h3 style="margin-bottom:0.5rem; color:var(--text-main);">Teams Created</h3>' +
+            '<p class="text-muted" style="margin-bottom:1rem;">No services registered yet. Register services to enable health monitoring.</p>' +
+            (hasPermission('teamadmin') ?
+              '<a href="admin.html" class="btn btn--primary">Go to Admin Panel &rarr; Register a Service</a>' :
+              '<p class="text-muted">Ask your admin to register services.</p>') +
+          '</div>';
+      } else {
+        await renderIncidentList('incident-list');
+      }
+
+      await updateStatsBar();
+
+      // Filter wiring
+      var searchInput = document.getElementById('search-incidents');
+      var filterStatus = document.getElementById('filter-status');
+      var filterSeverity = document.getElementById('filter-severity');
+      async function applyFilters() {
+        var filters = {};
+        if (searchInput && searchInput.value) filters.search = searchInput.value;
+        if (filterStatus && filterStatus.value && filterStatus.value !== 'ALL') filters.status = filterStatus.value.toLowerCase();
+        if (filterSeverity && filterSeverity.value && filterSeverity.value !== 'ALL') filters.severity = filterSeverity.value.toLowerCase();
+        await renderIncidentList('incident-list', Object.keys(filters).length > 0 ? filters : null);
+      }
+      if (searchInput) searchInput.addEventListener('input', applyFilters);
+      if (filterStatus) filterStatus.addEventListener('change', applyFilters);
+      if (filterSeverity) filterSeverity.addEventListener('change', applyFilters);
+
+      updateNotificationBadge();
+      await renderDashboardTeamSummary();
+      await startHealthMonitor();
+
+      // 15s polling for concurrent multi-user view
+      setInterval(async function() {
+        await renderIncidentList('incident-list');
+        await updateStatsBar();
+        await renderHealthMonitor();
+        updateNotificationBadge();
+      }, 15000);
+    })();
+  </script>
+
+</body>
+</html>
