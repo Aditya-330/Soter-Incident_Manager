@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Register Company — Soter">
+  <title>Register Company — Soter</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="logo.png">
+  <style>
+    .wizard-card {
+      max-width: 620px;
+      text-align: left;
+      margin: 2rem auto;
+      padding: 2.25rem 2rem;
+    }
+    .wizard-stepper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+    .wizard-stepper::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: var(--border-light);
+      z-index: 1;
+    }
+    .wizard-progress-line {
+      position: absolute;
+      top: 15px;
+      left: 10%;
+      height: 2px;
+      background: var(--text-main);
+      z-index: 2;
+      transition: width 0.35s ease;
+      width: 0%;
+    }
+    .wizard-step-node {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: default;
+    }
+    .wizard-step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-surface);
+      border: 2px solid var(--border-color);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+    .wizard-step-node.active .wizard-step-circle {
+      border-color: var(--text-main);
+      background: var(--text-main);
+      color: var(--bg-surface);
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.06);
+    }
+    .wizard-step-node.completed .wizard-step-circle {
+      border-color: var(--status-healthy);
+      background: var(--status-healthy);
+      color: #fff;
+    }
+    .wizard-step-label {
+      font-size: 0.725rem;
+      font-weight: 600;
+      color: var(--text-subtle);
+      transition: color 0.3s ease;
+      white-space: nowrap;
+    }
+    .wizard-step-node.active .wizard-step-label {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+    .wizard-step-node.completed .wizard-step-label {
+      color: var(--text-main);
+    }
+    .wizard-step-content {
+      display: none;
+      animation: fadeInStep 0.3s ease forwards;
+    }
+    .wizard-step-content.active {
+      display: block;
+    }
+    @keyframes fadeInStep {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .wizard-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-light);
+    }
+    .required-star {
+      color: var(--status-critical);
+      margin-left: 2px;
+    }
+    .optional-tag {
+      font-size: 0.75rem;
+      color: var(--text-subtle);
+      font-weight: normal;
+      margin-left: 4px;
+    }
+  </style>
+</head>
+<body class="fade-in">
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    if (sessionStorage.getItem('current_user')) {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+
+  <div class="auth-wrapper" style="padding: 2rem 1rem;">
+    <div class="auth-card wizard-card">
+      
+      
+      <div style="text-align:center; margin-bottom: 1.5rem;">
+        <img src="logo.png" alt="Logo" class="auth-card__logo" style="margin-bottom:0.5rem;">
+        <h1 style="font-size:1.45rem; font-weight:800; margin-bottom:0.2rem; letter-spacing:-0.02em;">Company Registration</h1>
+        <p class="text-muted" style="font-size:0.85rem;">Set up your organization's dedicated on-call &amp; incident management workspace</p>
+      </div>
+
+      
+      <div class="wizard-stepper" id="wizard-stepper">
+        <div class="wizard-progress-line" id="wizard-progress-line"></div>
+        <div class="wizard-step-node active" data-step="1">
+          <div class="wizard-step-circle">1</div>
+          <span class="wizard-step-label">Company</span>
+        </div>
+        <div class="wizard-step-node" data-step="2">
+          <div class="wizard-step-circle">2</div>
+          <span class="wizard-step-label">Contact</span>
+        </div>
+        <div class="wizard-step-node" data-step="3">
+          <div class="wizard-step-circle">3</div>
+          <span class="wizard-step-label">Business</span>
+        </div>
+        <div class="wizard-step-node" data-step="4">
+          <div class="wizard-step-circle">4</div>
+          <span class="wizard-step-label">Technical</span>
+        </div>
+      </div>
+
+      <div id="register-error" style="color:var(--status-critical); font-size:0.85rem; margin-bottom:1rem; text-align:center;"></div>
+      
+      
+      <div id="register-success" style="display:none; text-align:center; padding: 2rem 0.5rem;">
+        <div style="width:56px; height:56px; border-radius:50%; background:rgba(34,197,94,0.1); color:var(--status-healthy); display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; font-size:1.75rem;">
+          ✓
+        </div>
+        <h2 style="margin-bottom:0.75rem; font-size:1.35rem; color:var(--text-main); font-weight:700;">Application Submitted</h2>
+        <p class="text-muted" style="font-size:0.925rem; margin-bottom:2rem; line-height:1.6; max-width:460px; margin-left:auto; margin-right:auto;">
+          Thank you for submitting your details. Our platform team will review your application and contact you via email shortly with access credentials.
+        </p>
+        <a href="login.html" class="btn btn--primary" style="display:inline-block; padding:0.75rem 2rem;">Return to Login</a>
+      </div>
+
+      <form id="wizard-form">
+        
+        
+        <div class="wizard-step-content active" id="step-1">
+          <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:1.25rem;">1. Company Details</h3>
+          
+          <div class="form-group">
+            <label class="form-label" for="company-name">Company Name<span class="required-star">*</span></label>
+            <input class="form-input" type="text" id="company-name" required>
+          </div>
+
+          <div class="two-col" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="company-website">Company Website<span class="required-star">*</span></label>
+              <input class="form-input" type="text" id="company-website" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="company-size">Company Size<span class="required-star">*</span></label>
+              <select class="form-select" id="company-size" required>
+                <option value="">Select Size</option>
+                <option value="1-10 employees">1-10 employees</option>
+                <option value="11-50 employees">11-50 employees</option>
+                <option value="51-200 employees">51-200 employees</option>
+                <option value="201-500 employees">201-500 employees</option>
+                <option value="501-1000 employees">501-1000 employees</option>
+                <option value="1000+ employees">1000+ employees</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two-col" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="company-industry">Industry<span class="optional-tag">(optional)</span></label>
+              <select class="form-select" id="company-industry">
+                <option value="">Select Industry</option>
+                <option value="Technology & SaaS">Technology &amp; SaaS</option>
+                <option value="Financial Services & FinTech">Financial Services &amp; FinTech</option>
+                <option value="Healthcare & Life Sciences">Healthcare &amp; Life Sciences</option>
+                <option value="E-Commerce & Retail">E-Commerce &amp; Retail</option>
+                <option value="Telecommunications">Telecommunications</option>
+                <option value="Media & Entertainment">Media &amp; Entertainment</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="company-location">Company Location<span class="required-star">*</span></label>
+              <input class="form-input" type="text" id="company-location" required>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="wizard-step-content" id="step-2">
+          <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:1.25rem;">2. Contact Person</h3>
+
+          <div class="two-col" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="admin-name">Your Name<span class="required-star">*</span></label>
+              <input class="form-input" type="text" id="admin-name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-email">Your Email<span class="required-star">*</span></label>
+              <input class="form-input" type="email" id="admin-email" required>
+            </div>
+          </div>
+
+          <div class="two-col" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="admin-job-title">Job Title / Role<span class="required-star">*</span></label>
+              <input class="form-input" type="text" id="admin-job-title" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="admin-phone">Phone Number<span class="optional-tag">(optional)</span></label>
+              <input class="form-input" type="tel" id="admin-phone">
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="wizard-step-content" id="step-3">
+          <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:1.25rem;">3. Business Information</h3>
+
+          <div class="two-col" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="business-customers">Number of Customers<span class="required-star">*</span></label>
+              <input class="form-input" type="text" id="business-customers" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="business-revenue">Annual Revenue Range<span class="optional-tag">(optional)</span></label>
+              <select class="form-select" id="business-revenue">
+                <option value="">Select Range</option>
+                <option value="Pre-Revenue / Seed">Pre-Revenue / Seed</option>
+                <option value="Under $1M">Under $1M</option>
+                <option value="$1M - $10M">$1M - $10M</option>
+                <option value="$10M - $50M">$10M - $50M</option>
+                <option value="$50M+">$50M+</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two-col" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="business-employees">Number of Employees<span class="optional-tag">(optional)</span></label>
+              <input class="form-input" type="text" id="business-employees">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="business-opportunity">Expected Annual Opportunity<span class="optional-tag">(optional)</span></label>
+              <input class="form-input" type="text" id="business-opportunity">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="business-products">Key Products / Services<span class="required-star">*</span></label>
+            <input class="form-input" type="text" id="business-products" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="business-partnerships">Existing Technology Partnerships<span class="optional-tag">(optional)</span></label>
+            <input class="form-input" type="text" id="business-partnerships">
+          </div>
+        </div>
+
+        
+        <div class="wizard-step-content" id="step-4">
+          <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:1.25rem;">4. Technical Information</h3>
+
+          <div class="two-col" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="tech-integration-type">Integration Type<span class="required-star">*</span></label>
+              <select class="form-select" id="tech-integration-type" required>
+                <option value="">Select Type</option>
+                <option value="REST API & Webhooks">REST API &amp; Webhooks</option>
+                <option value="Bi-directional On-Call Sync">Bi-directional On-Call Sync</option>
+                <option value="Health Monitoring Probe">Health Monitoring Probe</option>
+                <option value="Full Incident Management Pipeline">Full Incident Management Pipeline</option>
+                <option value="Custom Integration">Custom Integration</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tech-products-integrate">Product / Technology to Integrate<span class="required-star">*</span></label>
+              <input class="form-input" type="text" id="tech-products-integrate" required>
+            </div>
+          </div>
+
+          <div class="two-col" style="gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="tech-contact">Technical Contact<span class="optional-tag">(optional)</span></label>
+              <input class="form-input" type="text" id="tech-contact">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tech-stack">Current Technology Stack<span class="optional-tag">(optional)</span></label>
+              <input class="form-input" type="text" id="tech-stack">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="tech-requirements">API / Integration Requirements<span class="optional-tag">(optional)</span></label>
+            <textarea class="form-input" id="tech-requirements" rows="2" style="resize:vertical;"></textarea>
+          </div>
+        </div>
+
+        
+        <div class="wizard-actions">
+          <div style="display:flex; align-items:center; gap:0.85rem;">
+            <button type="button" class="btn btn--outline" id="prev-btn" style="display:none;">&larr; Back</button>
+            <span style="font-size:0.8125rem; color:var(--text-subtle); font-weight:600;" id="step-indicator">Step 1 of 4</span>
+          </div>
+          <button type="button" class="btn btn--primary" id="next-btn" style="min-width:140px;">Next &rarr;</button>
+        </div>
+
+      </form>
+
+      <div id="register-footer" style="margin-top:1.75rem; font-size:0.8125rem; color:var(--text-subtle); text-align:center;">
+        Already registered? 
+        <a href="login.html" style="color:var(--text-main); font-weight:500;">Log in here</a>.
+      </div>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script>
+    var currentStep = 1;
+    var totalSteps = 4;
+
+    var prevBtn = document.getElementById('prev-btn');
+    var nextBtn = document.getElementById('next-btn');
+    var stepIndicator = document.getElementById('step-indicator');
+    var progressBar = document.getElementById('wizard-progress-line');
+
+    function updateWizardUI() {
+      // Content visibility
+      for (var i = 1; i <= totalSteps; i++) {
+        var content = document.getElementById('step-' + i);
+        if (content) {
+          if (i === currentStep) {
+            content.classList.add('active');
+          } else {
+            content.classList.remove('active');
+          }
+        }
+      }
+
+      // Stepper node states
+      var stepNodes = document.querySelectorAll('.wizard-step-node');
+      stepNodes.forEach(function(node, index) {
+        var stepNum = index + 1;
+        node.classList.remove('active', 'completed');
+        if (stepNum === currentStep) {
+          node.classList.add('active');
+        } else if (stepNum < currentStep) {
+          node.classList.add('completed');
+        }
+      });
+
+      // Progress bar line width (0% on step 1, 33% on step 2, 66% on step 3, 100% on step 4)
+      var progressPct = ((currentStep - 1) / (totalSteps - 1)) * 80;
+      progressBar.style.width = progressPct + '%';
+
+      // Back button visibility
+      prevBtn.style.display = currentStep > 1 ? 'inline-flex' : 'none';
+
+      // Next / Submit button text
+      if (currentStep === totalSteps) {
+        nextBtn.textContent = 'Submit Application';
+        nextBtn.className = 'btn btn--primary';
+      } else {
+        nextBtn.textContent = 'Next →';
+        nextBtn.className = 'btn btn--primary';
+      }
+
+      stepIndicator.textContent = 'Step ' + currentStep + ' of ' + totalSteps;
+      document.getElementById('register-error').textContent = '';
+    }
+
+    function validateCurrentStep() {
+      var errorEl = document.getElementById('register-error');
+      errorEl.textContent = '';
+
+      if (currentStep === 1) {
+        var name = document.getElementById('company-name').value.trim();
+        var website = document.getElementById('company-website').value.trim();
+        var size = document.getElementById('company-size').value;
+        var location = document.getElementById('company-location').value.trim();
+
+        if (!name) { errorEl.textContent = 'Please enter your Company Name.'; return false; }
+        if (!website) { errorEl.textContent = 'Please enter your Company Website.'; return false; }
+        if (!size) { errorEl.textContent = 'Please select your Company Size.'; return false; }
+        if (!location) { errorEl.textContent = 'Please enter your Company Location.'; return false; }
+        return true;
+      }
+
+      if (currentStep === 2) {
+        var adminName = document.getElementById('admin-name').value.trim();
+        var email = document.getElementById('admin-email').value.trim();
+        var jobTitle = document.getElementById('admin-job-title').value.trim();
+
+        if (!adminName) { errorEl.textContent = 'Please enter your Name.'; return false; }
+        if (!email || !email.includes('@')) { errorEl.textContent = 'Please enter a valid Work Email.'; return false; }
+        if (!jobTitle) { errorEl.textContent = 'Please enter your Job Title / Role.'; return false; }
+        return true;
+      }
+
+      if (currentStep === 3) {
+        var customers = document.getElementById('business-customers').value.trim();
+        var products = document.getElementById('business-products').value.trim();
+
+        if (!customers) { errorEl.textContent = 'Please enter the Number of Customers.'; return false; }
+        if (!products) { errorEl.textContent = 'Please enter your Key Products / Services.'; return false; }
+        return true;
+      }
+
+      if (currentStep === 4) {
+        var integrationType = document.getElementById('tech-integration-type').value;
+        var productsToIntegrate = document.getElementById('tech-products-integrate').value.trim();
+
+        if (!integrationType) { errorEl.textContent = 'Please select an Integration Type.'; return false; }
+        if (!productsToIntegrate) { errorEl.textContent = 'Please enter the Product / Technology to integrate.'; return false; }
+        return true;
+      }
+
+      return true;
+    }
+
+    prevBtn.addEventListener('click', function() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateWizardUI();
+      }
+    });
+
+    nextBtn.addEventListener('click', async function() {
+      if (!validateCurrentStep()) return;
+
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateWizardUI();
+      } else {
+        // Final Submission on Step 4
+        var err = document.getElementById('register-error');
+        err.textContent = '';
+        
+        var ogText = nextBtn.textContent;
+        nextBtn.textContent = 'Submitting...';
+        nextBtn.disabled = true;
+
+        var extraData = {
+          website: document.getElementById('company-website').value.trim(),
+          size: document.getElementById('company-size').value,
+          industry: document.getElementById('company-industry').value,
+          location: document.getElementById('company-location').value.trim(),
+          jobTitle: document.getElementById('admin-job-title').value.trim(),
+          phone: document.getElementById('admin-phone').value.trim(),
+          numCustomers: document.getElementById('business-customers').value.trim(),
+          revenueRange: document.getElementById('business-revenue').value,
+          numEmployees: document.getElementById('business-employees').value.trim(),
+          businessOpportunity: document.getElementById('business-opportunity').value.trim(),
+          keyProducts: document.getElementById('business-products').value.trim(),
+          techPartnerships: document.getElementById('business-partnerships').value.trim(),
+          integrationType: document.getElementById('tech-integration-type').value,
+          productsToIntegrate: document.getElementById('tech-products-integrate').value.trim(),
+          techContact: document.getElementById('tech-contact').value.trim(),
+          techStack: document.getElementById('tech-stack').value.trim(),
+          integrationRequirements: document.getElementById('tech-requirements').value.trim()
+        };
+
+        try {
+          var result = await registerCompany(
+            document.getElementById('company-name').value.trim(),
+            document.getElementById('admin-name').value.trim(),
+            document.getElementById('admin-email').value.trim(),
+            null,
+            extraData
+          );
+          
+          if (result && result.success && result.pending) {
+            document.getElementById('wizard-form').style.display = 'none';
+            document.getElementById('wizard-stepper').style.display = 'none';
+            document.getElementById('register-footer').style.display = 'none';
+            document.getElementById('register-success').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            err.textContent = (result && result.error) ? result.error : 'An error occurred while submitting your registration.';
+            nextBtn.textContent = ogText;
+            nextBtn.disabled = false;
+          }
+        } catch(ex) {
+          err.textContent = 'Connection error. Please try again.';
+          nextBtn.textContent = ogText;
+          nextBtn.disabled = false;
+        }
+      }
+    });
+
+    updateWizardUI();
+  </script>
+</body>
+</html>
