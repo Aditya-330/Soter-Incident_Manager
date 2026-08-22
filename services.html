@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Services Catalog & Dependency Graph — Soter">
+  <title>Services &amp; Dependencies — Soter</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body class="app-body">
+
+  
+  <script src="js/storage.js?v=3"></script>
+  <script src="js/auth.js?v=3"></script>
+  <script> requireLogin(); </script>
+
+  
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <img src="logo.png" alt="Logo">
+      <span class="sidebar__brand-name">Soter</span>
+    </a>
+
+    <nav class="sidebar__nav">
+      <div class="sidebar__section-label">Workspace</div>
+      <a href="dashboard.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Dashboard
+      </a>
+      <a href="trigger.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+        Report Incident
+      </a>
+      <a href="services.html" class="sidebar__link sidebar__link--active">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+        Services
+      </a>
+      <a href="teams.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        Teams
+      </a>
+      <a href="audit.html" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Audit Log
+      </a>
+      
+      <div id="sidebar-admin-link"></div>
+    </nav>
+
+    <div class="sidebar__user" id="sidebar-user"></div>
+  </aside>
+
+  
+  <main class="app-main fade-in">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.75rem;">
+      <div>
+        <h1 style="font-size:1.65rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:0.15rem;">Service Catalog &amp; Dependencies</h1>
+        <p class="text-muted" style="font-size:0.8125rem;">Register microservices, manage health polling configurations, edit parameters, and maintain upstream dependency trees.</p>
+      </div>
+    </div>
+
+    
+    <div id="register-service-section" style="margin-bottom: 2rem;">
+      <div class="card">
+        <h2 class="card__title" style="margin-bottom: 0.2rem; font-size:1.05rem;">Register New Service</h2>
+        <p class="card__text" style="margin-bottom: 1.25rem; font-size:0.8125rem;">Register services and establish dependency graph edges for automated escalation.</p>
+        
+        <form id="add-service-form">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem; margin-bottom:1rem;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label" for="service-name">Service Name</label>
+              <input class="form-input" type="text" id="service-name" placeholder="e.g. Payment Gateway API" required>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label" for="service-team">Owning Team</label>
+              <select class="form-select" id="service-team" required>
+                
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label class="form-label" for="service-health-endpoint">Health Endpoint URL</label>
+            <input class="form-input" type="url" id="service-health-endpoint" placeholder="https://api.example.com/health" required>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem; margin-bottom:1rem;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label" for="service-check-method">Check Method</label>
+              <select class="form-select" id="service-check-method" onchange="var g = document.getElementById('service-body-group'); if (g) g.style.display = this.value === 'GET' ? 'none' : 'block';">
+                <option value="GET" selected>GET (default)</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label" for="service-check-interval">Check Interval</label>
+              <select class="form-select" id="service-check-interval">
+                <option value="120" selected>Every 2 min (default)</option>
+                <option value="60">Every 1 min</option>
+                <option value="300">Every 5 min</option>
+                <option value="900">Every 15 min</option>
+                <option value="1800">Every 30 min</option>
+                <option value="30">Every 30 sec (testing)</option>
+                <option value="15">Every 15 sec (testing)</option>
+                <option value="1">Every 1 sec (testing)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" id="service-body-group" style="margin-bottom:1rem; display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+              <label class="form-label" for="service-body" style="margin:0;">Request Body (JSON Schema / Payload)</label>
+              <span style="font-size:0.7rem; color:var(--text-subtle);">Optional JSON payload sent with probe</span>
+            </div>
+            <textarea class="form-input mono" id="service-body" rows="3" style="font-size:0.775rem; font-family:monospace; resize:vertical;" placeholder='{\n  "action": "health_check",\n  "version": "1.0"\n}'></textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom:1.25rem;">
+            <label class="form-label">Upstream Dependencies (Cross-Team Escalation Graph)</label>
+            <div class="checkbox-container" id="depends-on-list" style="max-height:160px; overflow-y:auto; padding:0.75rem; background:var(--bg-surface); border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+              
+            </div>
+            <div style="font-size:0.7rem; color:var(--text-subtle); margin-top:0.35rem;">When an incident occurs on this service, dependency owners receive automated parallel alerts.</div>
+          </div>
+
+          <button type="submit" class="btn btn--primary" style="width:100%;">Register Service</button>
+        </form>
+      </div>
+    </div>
+
+    
+    <div class="section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 style="font-size:1.15rem; font-weight:700;">Registered Services</h2>
+      </div>
+      <div class="services-grid" id="services-catalog-list">
+        
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/teams.js?v=3"></script>
+  <script src="js/services.js?v=3"></script>
+  <script src="js/audit.js?v=3"></script>
+  <script src="js/admin.js?v=3"></script>
+  <script src="js/utils.js?v=3"></script>
+  <script>
+    (async function() {
+      // Sidebar user block
+      var user = getCurrentUser();
+      var sidebarUser = document.getElementById('sidebar-user');
+      if (user && sidebarUser) {
+        var roleDisplay = user.role === 'company_admin' ? 'Company Admin' : (user.role === 'platform_superadmin' ? 'Platform Admin' : user.role.charAt(0).toUpperCase() + user.role.slice(1));
+        sidebarUser.innerHTML =
+          '<div class="sidebar__user-info">' +
+            '<div style="flex:1; min-width:0;">' +
+              '<div class="sidebar__user-name">' + user.name + '</div>' +
+              '<span class="badge badge--' + user.role + '" style="font-size:0.65rem;">' + roleDisplay + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<button class="sidebar__logout" onclick="logout()">Sign out</button>';
+      }
+
+      // Impersonation banner
+      if (user && user.role === 'platform_superadmin') {
+        var mainEl = document.querySelector('.app-main');
+        if (mainEl) {
+          var banner = document.createElement('div');
+          banner.style.cssText = 'background:rgba(147,51,234,0.1); border:1px solid rgba(147,51,234,0.3); border-radius:var(--radius-sm); padding:0.6rem 1rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;';
+          banner.innerHTML =
+            '<span style="font-size:0.85rem; color:#9333ea; font-weight:600;">Viewing as Platform Superadmin (Services)</span>' +
+            '<a href="platform-admin.html" class="btn btn--sm btn--primary">Back to Platform Console &rarr;</a>';
+          mainEl.insertBefore(banner, mainEl.firstChild);
+        }
+      }
+
+      // Show admin panel link if teamadmin+
+      if (hasPermission('teamadmin')) {
+        document.getElementById('sidebar-admin-link').innerHTML =
+          '<a href="admin.html" class="sidebar__link">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>' +
+            'Admin Panel' +
+          '</a>';
+      }
+
+      // Hide registration form if user is not a teamadmin+
+      if (!hasPermission('teamadmin')) {
+        var regSection = document.getElementById('register-service-section');
+        if (regSection) regSection.style.display = 'none';
+      }
+
+      // Populate teams dropdown and dependencies
+      await populateTeamDropdowns();
+      await populateDependsOnCheckboxes();
+      await renderServiceList('services-catalog-list');
+
+      // Method change toggle for Request Body
+      var checkMethodSelect = document.getElementById('service-check-method');
+      var bodyGroup = document.getElementById('service-body-group');
+      function updateBodyVisibility() {
+        if (checkMethodSelect && bodyGroup) {
+          bodyGroup.style.display = checkMethodSelect.value === 'GET' ? 'none' : 'block';
+        }
+      }
+      if (checkMethodSelect) {
+        checkMethodSelect.addEventListener('change', updateBodyVisibility);
+        checkMethodSelect.addEventListener('input', updateBodyVisibility);
+        updateBodyVisibility();
+      }
+
+      // Wire up Add Service form
+      var serviceForm = document.getElementById('add-service-form');
+      if (serviceForm) {
+        serviceForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          var name = document.getElementById('service-name').value.trim();
+          var teamId = document.getElementById('service-team').value;
+          var healthEndpoint = document.getElementById('service-health-endpoint').value.trim();
+          var checkMethod = document.getElementById('service-check-method').value || 'GET';
+          var checkIntervalSeconds = document.getElementById('service-check-interval').value || '120';
+          var bodyRaw = document.getElementById('service-body') ? document.getElementById('service-body').value.trim() : '';
+
+          var dependsOn = [];
+          var checkboxes = document.querySelectorAll('.dep-checkbox:checked');
+          checkboxes.forEach(function(cb) {
+            dependsOn.push(cb.value);
+          });
+
+          if (!name || !teamId || !healthEndpoint) {
+            showToast('Name, Health Endpoint, and Team are required.', 'error');
+            return;
+          }
+
+          var requestBody = null;
+          if (checkMethod !== 'GET' && bodyRaw) {
+            try {
+              JSON.parse(bodyRaw);
+              requestBody = bodyRaw;
+            } catch(ex) {
+              showToast('Invalid JSON in Request Body: ' + ex.message, 'error');
+              return;
+            }
+          }
+
+          await addService(name, teamId, dependsOn, healthEndpoint, checkMethod, parseInt(checkIntervalSeconds), requestBody);
+          showToast('Service "' + name + '" created successfully!', 'success');
+          serviceForm.reset();
+          if (bodyGroup) bodyGroup.style.display = 'none';
+
+          await populateDependsOnCheckboxes();
+          await renderServiceList('services-catalog-list');
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>
