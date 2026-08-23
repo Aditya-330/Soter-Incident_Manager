@@ -3,8 +3,63 @@ var http = require('http');
 var https = require('https');
 var path = require('path');
 
+var fs = require('fs');
+
+var dbPath = path.join(__dirname, 'db.json');
+var defaultAdmin = {
+  id: '0fA-SsE-tHQ',
+  companyId: '__platform__',
+  name: 'Platform Admin',
+  email: 'admin@soter.io',
+  password: 'admin123',
+  role: 'platform_superadmin',
+  teamId: 'JfPkGedKBi4'
+};
+var defaultPlatformTeam = {
+  id: 'JfPkGedKBi4',
+  companyId: '__platform__',
+  name: 'Platform Admin',
+  description: 'Platform-level superadmin team',
+  memberIds: ['0fA-SsE-tHQ']
+};
+
+function ensureSeedData() {
+  try {
+    var raw = fs.existsSync(dbPath) ? fs.readFileSync(dbPath, 'utf8') : '{}';
+    var db = {};
+    try { db = JSON.parse(raw); } catch(e) { db = {}; }
+    var modified = false;
+
+    var collections = ['companies', 'users', 'teams', 'services', 'dependencyGraph', 'incidents', 'escalationLogs', 'auditLogs', 'inviteCodes'];
+    collections.forEach(function(col) {
+      if (!Array.isArray(db[col])) { db[col] = []; modified = true; }
+    });
+
+    var adminExists = db.users.some(function(u) { return u.email === 'admin@soter.io' || u.role === 'platform_superadmin'; });
+    if (!adminExists) {
+      db.users.push(defaultAdmin);
+      modified = true;
+    }
+
+    var teamExists = db.teams.some(function(t) { return t.id === 'JfPkGedKBi4'; });
+    if (!teamExists) {
+      db.teams.push(defaultPlatformTeam);
+      modified = true;
+    }
+
+    if (modified) {
+      fs.writeFileSync(dbPath, JSON.stringify(db, null, 2), 'utf8');
+      console.log('[Server] Seeded platform superadmin credentials in db.json');
+    }
+  } catch (err) {
+    console.error('[Server] Error ensuring seed data:', err);
+  }
+}
+
+ensureSeedData();
+
 var server = jsonServer.create();
-var router = jsonServer.router(path.join(__dirname, 'db.json'));
+var router = jsonServer.router(dbPath);
 var middlewares = jsonServer.defaults({
   static: path.join(__dirname),
   cors: true

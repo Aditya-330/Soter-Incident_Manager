@@ -497,12 +497,15 @@ async function renderIncidentList(containerId, filters) {
 
     var myTeamServiceIds = services.filter(function(s) { return s.teamId === currentUser.teamId; }).map(function(s) { return s.id; });
 
-    var upstreamServiceIds = new Set();
+    var relatedDepServiceIds = new Set();
     depGraph.forEach(function(edge) {
-
+      // Upstream: services my team depends on
       if (myTeamServiceIds.indexOf(edge.fromServiceId) !== -1) {
-
-        upstreamServiceIds.add(edge.toServiceId);
+        relatedDepServiceIds.add(edge.toServiceId);
+      }
+      // Downstream: services that depend on my team
+      if (myTeamServiceIds.indexOf(edge.toServiceId) !== -1) {
+        relatedDepServiceIds.add(edge.fromServiceId);
       }
     });
 
@@ -520,13 +523,12 @@ async function renderIncidentList(containerId, filters) {
 
       var isDepInvolved = false;
       if (inc.isCrossTeam) {
-
-        if (myTeamServiceIds.indexOf(inc.serviceId) !== -1) {
+        if (myTeamServiceIds.indexOf(inc.serviceId) !== -1 || relatedDepServiceIds.has(inc.serviceId) || (inc.rootCauseServiceId && myTeamServiceIds.indexOf(inc.rootCauseServiceId) !== -1)) {
           isDepInvolved = true;
         }
       }
 
-      if (upstreamServiceIds.has(inc.serviceId)) {
+      if (relatedDepServiceIds.has(inc.serviceId)) {
         isDepInvolved = true;
       }
 
