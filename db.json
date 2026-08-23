@@ -24,6 +24,114 @@
       "techContact": "",
       "techStack": "",
       "createdAt": "2026-08-19T19:01:24.382Z"
+    },
+    {
+      "id": "cKWmMYmVZ8w",
+      "name": "BugTest",
+      "status": "pending",
+      "website": "bug test.com",
+      "size": "1-10 employees",
+      "industry": "Technology & SaaS",
+      "location": "NAN",
+      "adminName": "TESTUSER",
+      "adminEmail": "test@user.com",
+      "jobTitle": "CompanyADMIN",
+      "phone": "",
+      "numCustomers": "120",
+      "revenueRange": "$1M - $10M",
+      "numEmployees": "",
+      "techPartnerships": "",
+      "keyProducts": "TESTING",
+      "businessOpportunity": "",
+      "integrationType": "REST API & Webhooks",
+      "productsToIntegrate": "API",
+      "integrationRequirements": "",
+      "techContact": "",
+      "techStack": "",
+      "createdAt": "2026-08-23T14:50:05.424Z"
+    },
+    {
+      "id": "79TBQD4kfPA",
+      "name": "BugTest",
+      "status": "pending",
+      "website": "bug test.com",
+      "size": "1-10 employees",
+      "industry": "Technology & SaaS",
+      "location": "NAN",
+      "adminName": "TESTUSER",
+      "adminEmail": "bug@test.com",
+      "jobTitle": "CompanyADMIN",
+      "phone": "",
+      "numCustomers": "120",
+      "revenueRange": "$1M - $10M",
+      "numEmployees": "",
+      "techPartnerships": "",
+      "keyProducts": "TESTING",
+      "businessOpportunity": "",
+      "integrationType": "REST API & Webhooks",
+      "productsToIntegrate": "API",
+      "integrationRequirements": "",
+      "techContact": "",
+      "techStack": "",
+      "createdAt": "2026-08-23T14:50:34.560Z"
+    },
+    {
+      "id": "aoG75CCf42A",
+      "name": "BugTest",
+      "status": "pending",
+      "website": "bug test.com",
+      "size": "1-10 employees",
+      "industry": "Technology & SaaS",
+      "location": "NAN",
+      "adminName": "TESTUSER",
+      "adminEmail": "newtest@example.com",
+      "jobTitle": "CompanyADMIN",
+      "phone": "",
+      "numCustomers": "120",
+      "revenueRange": "$1M - $10M",
+      "numEmployees": "",
+      "techPartnerships": "",
+      "keyProducts": "TESTING",
+      "businessOpportunity": "",
+      "integrationType": "REST API & Webhooks",
+      "productsToIntegrate": "API",
+      "integrationRequirements": "",
+      "techContact": "",
+      "techStack": "",
+      "createdAt": "2026-08-23T14:51:41.969Z"
+    },
+    {
+      "name": "TestCompanyErrorCheck",
+      "id": "Hvg9ed5DdUs"
+    },
+    {
+      "id": "LFiWXQIn7HU",
+      "name": "TestingId"
+    },
+    {
+      "id": "u9uhpkkpK5M",
+      "name": "test2",
+      "status": "approved",
+      "website": "test2.com",
+      "size": "11-50 employees",
+      "industry": "Technology & SaaS",
+      "location": "NA",
+      "adminName": "tester1",
+      "adminEmail": "tester@gmail.com",
+      "jobTitle": "tester",
+      "phone": "",
+      "numCustomers": "200",
+      "revenueRange": "Under $1M",
+      "numEmployees": "",
+      "techPartnerships": "",
+      "keyProducts": "API",
+      "businessOpportunity": "",
+      "integrationType": "REST API & Webhooks",
+      "productsToIntegrate": "TESTING",
+      "integrationRequirements": "",
+      "techContact": "",
+      "techStack": "",
+      "createdAt": "2026-08-23T15:03:43.371Z"
     }
   ],
   "users": [
@@ -71,6 +179,57 @@
       "password": "MintPass1234",
       "role": "teamadmin",
       "teamId": "mt0hy8hk2bzh3g"
+    },
+    {
+      "id": "0fA-SsE-tHQ",
+      "companyId": "__platform__",
+      "name": "Platform Admin",
+      "email": "admin@soter.io",
+      "password": "admin123",
+      "role": "platform_superadmin",
+      "teamId": "JfPkGedKBi4"
+    },
+    {
+      "id": "-djOQ0kfddU",
+      "companyId": "mt5xbrw0nzxbo1",
+      "name": "TESTUSER",
+      "email": "test@user.com",
+      "password": "admin123",
+      "role": "company_admin",
+      "teamId": "mt5xbrwev1axoq"
+    },
+    {
+      "id": "ODfTTB0w0mE",
+      "companyId": "mt5xcedcf569xr",
+      "name": "TESTUSER",
+      "email": "bug@test.com",
+      "password": "admin123",
+      "role": "company_admin",
+      "teamId": "mt5xcedyabl9n2"
+    },
+    {
+      "id": "v5eBAwQeqTk",
+      "companyId": "mt5xdudtliimuf",
+      "name": "TESTUSER",
+      "email": "newtest@example.com",
+      "password": "admin123",
+      "role": "company_admin",
+      "teamId": "mt5xdue8ljh7sp"
+    },
+    {
+      "companyId": "Hvg9ed5DdUs",
+      "email": "test2@user.com",
+      "teamId": "ZCFy9lufEsc",
+      "id": "VDr2LQBekH8"
+    },
+    {
+      "id": "iRm-Crm63GM",
+      "companyId": "u9uhpkkpK5M",
+      "name": "tester1",
+      "email": "tester@gmail.com",
+      "password": "admin123",
+      "role": "company_admin",
+      "teamId": "G9qvySmWAas"
     }
   ],
   "teams": [
@@ -100,6 +259,53 @@
       "description": "Manage users around the website",
       "memberIds": [
         "mt0hyml60fy50v"
+      ]
+    },
+    {
+      "id": "JfPkGedKBi4",
+      "companyId": "__platform__",
+      "name": "Platform Admin",
+      "description": "Platform-level superadmin team",
+      "memberIds": [
+        "0fA-SsE-tHQ"
+      ]
+    },
+    {
+      "id": "8fZHL8z_CDA",
+      "companyId": "mt5xbrw0nzxbo1",
+      "name": "Admin",
+      "description": "Default admin team",
+      "memberIds": []
+    },
+    {
+      "id": "-hVy1ZzaD3E",
+      "companyId": "mt5xcedcf569xr",
+      "name": "Admin",
+      "description": "Default admin team",
+      "memberIds": []
+    },
+    {
+      "id": "RFJkiH_quwU",
+      "companyId": "mt5xdudtliimuf",
+      "name": "Admin",
+      "description": "Default admin team",
+      "memberIds": []
+    },
+    {
+      "companyId": "Hvg9ed5DdUs",
+      "name": "Admin",
+      "id": "ZCFy9lufEsc",
+      "memberIds": [
+        "VDr2LQBekH8"
+      ]
+    },
+    {
+      "id": "G9qvySmWAas",
+      "companyId": "u9uhpkkpK5M",
+      "name": "Admin",
+      "description": "Default admin team",
+      "memberIds": [
+        "iRm-Crm63GM"
       ]
     }
   ],
@@ -3872,6 +4078,13 @@
       "companyId": "mt0gjk7yj6qpxy",
       "code": "INV-KHDFJI",
       "createdAt": "2026-08-19T19:01:51.179Z"
+    },
+    {
+      "id": "rd3d1k-bkzA",
+      "companyId": "u9uhpkkpK5M",
+      "code": "INV-HBRGG4",
+      "createdAt": "2026-08-23T15:04:44.173Z"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
