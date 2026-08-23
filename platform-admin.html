@@ -448,17 +448,18 @@
         var existingTeams = await api.get('teams', { companyId: companyId });
         var adminTeamId = null;
         if (existingTeams.length === 0) {
-          adminTeamId = generateId();
-          await api.post('teams', {
-            id: adminTeamId,
+          var createdTeam = await api.post('teams', {
+            id: generateId(),
             companyId: companyId,
             name: 'Admin',
             description: 'Default admin team — auto-created on company approval',
             memberIds: []
           });
+          adminTeamId = createdTeam.id;
         } else {
           adminTeamId = existingTeams[0].id;
         }
+
 
         // Assign the company_admin user to the default team if they have no teamId
         var companyUsers = await api.get('users', { companyId: companyId });
