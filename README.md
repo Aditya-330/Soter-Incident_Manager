@@ -102,6 +102,12 @@ oncall-b2b-ca1/
 | `auditLogs` | General system audit events |
 | `inviteCodes` | Company-scoped invite codes for signup |
 
+
+<img width="1280" height="723" alt="PHOTO-2026-08-23-20-58-18" src="https://github.com/user-attachments/assets/cc43a91d-6134-40b8-bcd6-28fd1d2f68e1" />
+<img width="1280" height="723" alt="PHOTO-2026-08-23-20-58-18" src="https://github.com/user-attachments/assets/6b1be918-1db4-432d-b52b-159d871cf9e5" />
+<img width="1456" height="837" alt="PHOTO-2026-08-23-20-58-17" src="https://github.com/user-attachments/assets/649f816e-8d18-4339-8aca-2b59db771583" />
+
+
 ## Contributors
 
 | Member | Role | Key Modules |
