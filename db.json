@@ -1,7 +1,27 @@
 {
   "companies": [],
-  "users": [],
-  "teams": [],
+  "users": [
+    {
+      "id": "0fA-SsE-tHQ",
+      "companyId": "__platform__",
+      "name": "Platform Admin",
+      "email": "admin@soter.io",
+      "password": "admin123",
+      "role": "platform_superadmin",
+      "teamId": "JfPkGedKBi4"
+    }
+  ],
+  "teams": [
+    {
+      "id": "JfPkGedKBi4",
+      "companyId": "__platform__",
+      "name": "Platform Admin",
+      "description": "Platform-level superadmin team",
+      "memberIds": [
+        "0fA-SsE-tHQ"
+      ]
+    }
+  ],
   "services": [],
   "dependencyGraph": [],
   "incidents": [],
