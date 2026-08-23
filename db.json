@@ -234,29 +234,6 @@
       "lastError": null
     },
     {
-      "id": "svc-payments-get",
-      "companyId": "mt0gjk7yj6qpxy",
-      "teamId": "team-payment-01",
-      "name": "Payments GET endpoint",
-      "healthEndpoint": "https://soter-demo-store-1787161869.netlify.app/health/payments",
-      "checkMethod": "GET",
-      "checkIntervalSeconds": 15,
-      "status": "healthy",
-      "lastError": null
-    },
-    {
-      "id": "svc-payments-post",
-      "companyId": "mt0gjk7yj6qpxy",
-      "teamId": "team-payment-01",
-      "name": "Payments POST endpoint",
-      "healthEndpoint": "https://soter-demo-store-1787161869.netlify.app/api/payments",
-      "checkMethod": "POST",
-      "checkIntervalSeconds": 15,
-      "requestBody": "{\n  \"orderId\": \"ord-9921\",\n  \"amount\": 79.99,\n  \"currency\": \"USD\"\n}",
-      "status": "healthy",
-      "lastError": null
-    },
-    {
       "id": "svc-inventory-get",
       "companyId": "mt0gjk7yj6qpxy",
       "teamId": "team-inventory-01",
@@ -284,25 +261,7 @@
       "id": "dep-edge-01",
       "companyId": "mt0gjk7yj6qpxy",
       "fromServiceId": "svc-checkout-post",
-      "toServiceId": "svc-payments-get"
-    },
-    {
-      "id": "dep-edge-02",
-      "companyId": "mt0gjk7yj6qpxy",
-      "fromServiceId": "svc-checkout-get",
-      "toServiceId": "svc-payments-get"
-    },
-    {
-      "id": "dep-edge-03",
-      "companyId": "mt0gjk7yj6qpxy",
-      "fromServiceId": "svc-checkout-post",
       "toServiceId": "svc-inventory-get"
-    },
-    {
-      "id": "dep-edge-04",
-      "companyId": "mt0gjk7yj6qpxy",
-      "fromServiceId": "svc-payments-get",
-      "toServiceId": "svc-auth-get"
     }
   ],
   "incidents": [],
