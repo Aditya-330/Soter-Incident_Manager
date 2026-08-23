@@ -1,5 +1,31 @@
 {
-  "companies": [],
+  "companies": [
+    {
+      "id": "mt0gjk7yj6qpxy",
+      "name": "SoterStore",
+      "status": "approved",
+      "website": "https://soter-demo-store-1787161869.netlify.app/",
+      "size": "51-200 employees",
+      "industry": "E-Commerce",
+      "location": "Bangalore, India",
+      "adminName": "Aditya",
+      "adminEmail": "aditya@soterstore.com",
+      "jobTitle": "Director of Engineering",
+      "phone": "+91 98765 43210",
+      "numCustomers": "2.5M active customers",
+      "revenueRange": "$10M - $50M",
+      "numEmployees": "120",
+      "techPartnerships": "AWS, Stripe, Netlify",
+      "keyProducts": "E-Commerce Online Store, Checkout Engine, Live Payment Gateway",
+      "businessOpportunity": "B2B On-Call Incident Management",
+      "integrationType": "Health Monitoring Probe",
+      "productsToIntegrate": "Storefront Web, Checkout API, Payments Webhook, Inventory Sync",
+      "integrationRequirements": "Sub-minute downtime detection with automated multi-tier escalation",
+      "techContact": "aditya@soterstore.com",
+      "techStack": "Node.js, Vanilla JS, Netlify, REST APIs",
+      "createdAt": "2026-08-20T10:00:00.000Z"
+    }
+  ],
   "users": [
     {
       "id": "0fA-SsE-tHQ",
@@ -9,6 +35,123 @@
       "password": "admin123",
       "role": "platform_superadmin",
       "teamId": "JfPkGedKBi4"
+    },
+    {
+      "id": "usr-admin-aditya",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Aditya",
+      "email": "aditya@soterstore.com",
+      "password": "admin123",
+      "role": "company_admin",
+      "teamId": "team-checkout-01"
+    },
+    {
+      "id": "usr-admin-adtiya-alias",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Aditya",
+      "email": "adtiya@soterstore.com",
+      "password": "admin123",
+      "role": "company_admin",
+      "teamId": "team-checkout-01"
+    },
+    {
+      "id": "usr-chk-01",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Radhika",
+      "email": "radhika@soterstore.com",
+      "password": "admin123",
+      "role": "teamadmin",
+      "teamId": "team-checkout-01"
+    },
+    {
+      "id": "usr-chk-02",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Kunal Chabbra",
+      "email": "kunal@soterstore.com",
+      "password": "admin123",
+      "role": "senior",
+      "teamId": "team-checkout-01"
+    },
+    {
+      "id": "usr-chk-03",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Aarav Sharma",
+      "email": "aarav@soterstore.com",
+      "password": "admin123",
+      "role": "junior",
+      "teamId": "team-checkout-01"
+    },
+    {
+      "id": "usr-inv-01",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Vaibhav Sultane",
+      "email": "vaibhav@soterstore.com",
+      "password": "admin123",
+      "role": "teamadmin",
+      "teamId": "team-inventory-01"
+    },
+    {
+      "id": "usr-inv-02",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Rohan Verma",
+      "email": "rohan@soterstore.com",
+      "password": "admin123",
+      "role": "senior",
+      "teamId": "team-inventory-01"
+    },
+    {
+      "id": "usr-inv-03",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Priya Patel",
+      "email": "priya@soterstore.com",
+      "password": "admin123",
+      "role": "junior",
+      "teamId": "team-inventory-01"
+    },
+    {
+      "id": "usr-auth-01",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Ravish Raheja",
+      "email": "ravish@soterstore.com",
+      "password": "admin123",
+      "role": "teamadmin",
+      "teamId": "team-auth-01"
+    },
+    {
+      "id": "usr-auth-02",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Sneha Reddy",
+      "email": "sneha@soterstore.com",
+      "password": "admin123",
+      "role": "senior",
+      "teamId": "team-auth-01"
+    },
+    {
+      "id": "usr-auth-03",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Ananya Gupta",
+      "email": "ananya@soterstore.com",
+      "password": "admin123",
+      "role": "junior",
+      "teamId": "team-auth-01"
+    },
+    {
+      "id": "usr-pay-01",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Vikram Malhotra",
+      "email": "vikram@soterstore.com",
+      "password": "admin123",
+      "role": "teamadmin",
+      "teamId": "team-payment-01"
+    },
+    {
+      "id": "usr-pay-02",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Tanvi Shah",
+      "email": "tanvi@soterstore.com",
+      "password": "admin123",
+      "role": "senior",
+      "teamId": "team-payment-01"
     }
   ],
   "teams": [
@@ -20,12 +163,157 @@
       "memberIds": [
         "0fA-SsE-tHQ"
       ]
+    },
+    {
+      "id": "team-checkout-01",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Checkout",
+      "description": "Manages user cart and checkout processing pipeline",
+      "memberIds": [
+        "usr-admin-aditya",
+        "usr-chk-01",
+        "usr-chk-02",
+        "usr-chk-03"
+      ]
+    },
+    {
+      "id": "team-payment-01",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Payment",
+      "description": "Handles transaction processing, gateways, and currency conversions",
+      "memberIds": [
+        "usr-pay-01",
+        "usr-pay-02"
+      ]
+    },
+    {
+      "id": "team-inventory-01",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Inventory",
+      "description": "Tracks product catalog, warehouse availability, and stock reservations",
+      "memberIds": [
+        "usr-inv-01",
+        "usr-inv-02",
+        "usr-inv-03"
+      ]
+    },
+    {
+      "id": "team-auth-01",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Auth",
+      "description": "Handles user authentication, identity sessions, and permissions",
+      "memberIds": [
+        "usr-auth-01",
+        "usr-auth-02",
+        "usr-auth-03"
+      ]
     }
   ],
-  "services": [],
-  "dependencyGraph": [],
+  "services": [
+    {
+      "id": "svc-checkout-get",
+      "companyId": "mt0gjk7yj6qpxy",
+      "teamId": "team-checkout-01",
+      "name": "Checkout GET endpoint",
+      "healthEndpoint": "https://soter-demo-store-1787161869.netlify.app/health/checkout",
+      "checkMethod": "GET",
+      "checkIntervalSeconds": 15,
+      "status": "healthy",
+      "lastError": null
+    },
+    {
+      "id": "svc-checkout-post",
+      "companyId": "mt0gjk7yj6qpxy",
+      "teamId": "team-checkout-01",
+      "name": "Checkout POST endpoint",
+      "healthEndpoint": "https://soter-demo-store-1787161869.netlify.app/api/checkout",
+      "checkMethod": "POST",
+      "checkIntervalSeconds": 15,
+      "requestBody": "{\n  \"items\": [\n    {\n      \"id\": \"prod-01\",\n      \"name\": \"Wireless Headphones\",\n      \"price\": 79.99,\n      \"quantity\": 1\n    }\n  ],\n  \"total\": 79.99\n}",
+      "status": "healthy",
+      "lastError": null
+    },
+    {
+      "id": "svc-payments-get",
+      "companyId": "mt0gjk7yj6qpxy",
+      "teamId": "team-payment-01",
+      "name": "Payments GET endpoint",
+      "healthEndpoint": "https://soter-demo-store-1787161869.netlify.app/health/payments",
+      "checkMethod": "GET",
+      "checkIntervalSeconds": 15,
+      "status": "healthy",
+      "lastError": null
+    },
+    {
+      "id": "svc-payments-post",
+      "companyId": "mt0gjk7yj6qpxy",
+      "teamId": "team-payment-01",
+      "name": "Payments POST endpoint",
+      "healthEndpoint": "https://soter-demo-store-1787161869.netlify.app/api/payments",
+      "checkMethod": "POST",
+      "checkIntervalSeconds": 15,
+      "requestBody": "{\n  \"orderId\": \"ord-9921\",\n  \"amount\": 79.99,\n  \"currency\": \"USD\"\n}",
+      "status": "healthy",
+      "lastError": null
+    },
+    {
+      "id": "svc-inventory-get",
+      "companyId": "mt0gjk7yj6qpxy",
+      "teamId": "team-inventory-01",
+      "name": "Inventory GET endpoint",
+      "healthEndpoint": "https://soter-demo-store-1787161869.netlify.app/health/inventory",
+      "checkMethod": "GET",
+      "checkIntervalSeconds": 15,
+      "status": "healthy",
+      "lastError": null
+    },
+    {
+      "id": "svc-auth-get",
+      "companyId": "mt0gjk7yj6qpxy",
+      "teamId": "team-auth-01",
+      "name": "Auth GET endpoint",
+      "healthEndpoint": "https://soter-demo-store-1787161869.netlify.app/health/auth",
+      "checkMethod": "GET",
+      "checkIntervalSeconds": 15,
+      "status": "healthy",
+      "lastError": null
+    }
+  ],
+  "dependencyGraph": [
+    {
+      "id": "dep-edge-01",
+      "companyId": "mt0gjk7yj6qpxy",
+      "fromServiceId": "svc-checkout-post",
+      "toServiceId": "svc-payments-get"
+    },
+    {
+      "id": "dep-edge-02",
+      "companyId": "mt0gjk7yj6qpxy",
+      "fromServiceId": "svc-checkout-get",
+      "toServiceId": "svc-payments-get"
+    },
+    {
+      "id": "dep-edge-03",
+      "companyId": "mt0gjk7yj6qpxy",
+      "fromServiceId": "svc-checkout-post",
+      "toServiceId": "svc-inventory-get"
+    },
+    {
+      "id": "dep-edge-04",
+      "companyId": "mt0gjk7yj6qpxy",
+      "fromServiceId": "svc-payments-get",
+      "toServiceId": "svc-auth-get"
+    }
+  ],
   "incidents": [],
   "escalationLogs": [],
   "auditLogs": [],
-  "inviteCodes": []
+  "inviteCodes": [
+    {
+      "id": "inv-code-soter",
+      "companyId": "mt0gjk7yj6qpxy",
+      "code": "SOTER-DEMO-2026",
+      "createdAt": "2026-08-20T10:00:00.000Z"
+    }
+  ]
 }
