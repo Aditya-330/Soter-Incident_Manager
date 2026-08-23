@@ -5,3 +5,5 @@ node_modules/
 .idea/
 .vscode/
 git_replay*.sh
+DEPLOYMENT.md
+db.seed.json

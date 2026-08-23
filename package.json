@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "On-Call Incident Escalation Manager — Phase 1",
   "scripts": {
-    "start": "json-server --watch db.json --port 3001",
-    "proxy": "node proxy-server.js",
-    "dev": "node proxy-server.js & json-server --watch db.json --port 3001"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "json-server": "json-server --watch db.json --port 3001",
+    "proxy": "node proxy-server.js"
   },
   "dependencies": {
     "json-server": "^0.17.4"

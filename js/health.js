@@ -67,8 +67,11 @@ async function runDueHealthChecks() {
     }
   }
 }
-
-var HEALTH_PROXY_URL = 'http://localhost:3002';
+var HEALTH_PROXY_URL = window.HEALTH_PROXY_URL || localStorage.getItem('soter_proxy_url') || (
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? (window.location.port === '3001' ? 'http://localhost:3001' : 'http://localhost:3002')
+    : window.location.origin
+);
 
 async function performHealthCheck(service) {
   var method = (service.checkMethod || 'GET').toUpperCase();

@@ -1,5 +1,8 @@
-
-var API_BASE = 'http://localhost:3001';
+var API_BASE = window.API_BASE || localStorage.getItem('soter_api_base') || (
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3001'
+    : window.location.origin
+);
 
 var ROLE_LEVELS = {
   platform_superadmin: 5,
