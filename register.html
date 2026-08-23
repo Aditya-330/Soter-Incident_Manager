@@ -521,7 +521,7 @@
             nextBtn.disabled = false;
           }
         } catch(ex) {
-          err.textContent = 'Connection error. Please try again.';
+          err.textContent = 'Connection error: ' + ex.message;
           nextBtn.textContent = ogText;
           nextBtn.disabled = false;
         }
