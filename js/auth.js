@@ -88,24 +88,41 @@ async function registerCompany(companyName, adminName, adminEmail, adminPassword
     createdAt: new Date().toISOString()
   };
 
-  await api.post('companies', companyRecord);
+  var createdCompany = await api.post('companies', companyRecord);
+  const actualCompanyId = createdCompany.id;
 
+  const defaultTeamId = generateId();
+  var defaultTeam = {
+    id: defaultTeamId,
+    companyId: actualCompanyId,
+    name: 'Admin',
+    description: 'Default admin team',
+    memberIds: []
+  };
+  var createdTeam = await api.post('teams', defaultTeam);
+  const actualTeamId = createdTeam.id;
+
+  const newAdminId = generateId();
   const newAdmin = {
-    id: generateId(),
-    companyId: companyId,
+    id: newAdminId,
+    companyId: actualCompanyId,
     name: adminName,
     email: adminEmail,
     password: adminPassword || 'admin123',
     role: 'company_admin',
-    teamId: null
+    teamId: actualTeamId
   };
-  await api.post('users', newAdmin);
+  var createdAdmin = await api.post('users', newAdmin);
+  const actualAdminId = createdAdmin.id;
+
+  // Add the admin to the team
+  await api.patch('teams', actualTeamId, { memberIds: [actualAdminId] });
 
   if (typeof logAction === 'function') {
-    await logAction('COMPANY_REGISTERED_PENDING', 'Company "' + companyName + '" submitted for approval by ' + adminName, companyId, adminName, companyId);
+    await logAction('COMPANY_REGISTERED_PENDING', 'Company "' + companyName + '" submitted for approval by ' + adminName, actualCompanyId, adminName, actualCompanyId);
   }
 
-  return { success: true, pending: true, companyId: companyId };
+  return { success: true, pending: true, companyId: actualCompanyId };
 }
 
 async function login(email, password) {

@@ -444,6 +444,38 @@
           });
         }
 
+        // Auto-create a default "Admin" team for the company if none exists
+        var existingTeams = await api.get('teams', { companyId: companyId });
+        var adminTeamId = null;
+        if (existingTeams.length === 0) {
+          adminTeamId = generateId();
+          await api.post('teams', {
+            id: adminTeamId,
+            companyId: companyId,
+            name: 'Admin',
+            description: 'Default admin team — auto-created on company approval',
+            memberIds: []
+          });
+        } else {
+          adminTeamId = existingTeams[0].id;
+        }
+
+        // Assign the company_admin user to the default team if they have no teamId
+        var companyUsers = await api.get('users', { companyId: companyId });
+        for (var i = 0; i < companyUsers.length; i++) {
+          var u = companyUsers[i];
+          if (u.role === 'company_admin' && (!u.teamId || u.teamId === '')) {
+            await api.patch('users', u.id, { teamId: adminTeamId });
+            // Also add admin to team's memberIds
+            var team = await api.getById('teams', adminTeamId);
+            var memberIds = team.memberIds || [];
+            if (memberIds.indexOf(u.id) === -1) {
+              memberIds.push(u.id);
+              await api.patch('teams', adminTeamId, { memberIds: memberIds });
+            }
+          }
+        }
+
         showToast('Company "' + companyName + '" approved successfully!', 'success');
         await loadPlatformData();
 
