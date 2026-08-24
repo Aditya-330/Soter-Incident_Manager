@@ -1,7 +1,14 @@
+// Global filter state for user directory
+var userDirFilters = {
+  query: '',
+  role: '',
+  teamId: ''
+};
 
 async function initAdminPage() {
   await populateTeamDropdowns();
   await populateDependsOnCheckboxes();
+  await populateUserDirFilterDropdowns();
   await renderUserDirectory();
 
   if (typeof renderTeamList === 'function') await renderTeamList('admin-team-list');
@@ -11,6 +18,44 @@ async function initAdminPage() {
     await renderInviteCodes();
   }
 
+  // Search & Filter event listeners for User Directory
+  var searchInput = document.getElementById('user-dir-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+      userDirFilters.query = e.target.value.trim().toLowerCase();
+      renderUserDirectory();
+    });
+  }
+
+  var roleFilter = document.getElementById('user-dir-role-filter');
+  if (roleFilter) {
+    roleFilter.addEventListener('change', function(e) {
+      userDirFilters.role = e.target.value;
+      renderUserDirectory();
+    });
+  }
+
+  var teamFilter = document.getElementById('user-dir-team-filter');
+  if (teamFilter) {
+    teamFilter.addEventListener('change', function(e) {
+      userDirFilters.teamId = e.target.value;
+      renderUserDirectory();
+    });
+  }
+
+  // Modal Add User Form
+  var modalAddForm = document.getElementById('modal-add-user-form');
+  if (modalAddForm) {
+    modalAddForm.addEventListener('submit', handleAddUserSubmit);
+  }
+
+  // Modal Edit User Form
+  var modalEditForm = document.getElementById('modal-edit-user-form');
+  if (modalEditForm) {
+    modalEditForm.addEventListener('submit', handleEditUserSubmit);
+  }
+
+  // Create Team Form
   var teamForm = document.getElementById('add-team-form');
   if (teamForm) {
     teamForm.addEventListener('submit', async function(e) {
@@ -37,11 +82,14 @@ async function initAdminPage() {
       teamForm.reset();
 
       await populateTeamDropdowns();
+      await populateUserDirFilterDropdowns();
       await populateDependsOnCheckboxes();
       await renderTeamList('admin-team-list');
+      await renderUserDirectory();
     });
   }
 
+  // Provision Member Form (card 2)
   var adminProvForm = document.getElementById('admin-provision-member-form');
   if (adminProvForm) {
     adminProvForm.addEventListener('submit', async function(e) {
@@ -60,7 +108,7 @@ async function initAdminPage() {
       try {
         if (typeof createAndAssignMember === 'function') {
           await createAndAssignMember(name, email, password, role, teamId);
-          var roleLabel = role === 'junior' ? 'SDE I' : (role === 'senior' ? 'SDE II' : 'Tech Lead');
+          var roleLabel = role === 'junior' ? 'SDE I' : (role === 'senior' ? 'SDE II' : (role === 'teamadmin' ? 'Tech Lead' : 'Company Admin'));
           showToast('Developer ' + name + ' (' + roleLabel + ') provisioned successfully!', 'success');
           adminProvForm.reset();
           await renderUserDirectory();
@@ -73,6 +121,7 @@ async function initAdminPage() {
     });
   }
 
+  // Service Form
   var serviceForm = document.getElementById('add-service-form');
   if (serviceForm) {
     var checkMethodSelect = document.getElementById('service-check-method');
@@ -129,6 +178,7 @@ async function initAdminPage() {
     });
   }
 
+  // Assign Member Form (card 4)
   var memberForm = document.getElementById('add-member-form');
   if (memberForm) {
     await populateMemberUserDropdown();
@@ -188,6 +238,22 @@ async function populateTeamDropdowns() {
     if (serviceTeamDropdown) serviceTeamDropdown.innerHTML = html;
     if (provTeamDropdown) provTeamDropdown.innerHTML = html;
     if (manageTeamDropdown) manageTeamDropdown.innerHTML = html;
+  }
+}
+
+async function populateUserDirFilterDropdowns() {
+  var teamFilter = document.getElementById('user-dir-team-filter');
+  if (!teamFilter) return;
+
+  var teams = await getAllTeams();
+  var html = '<option value="">All Teams</option>';
+  html += '<option value="__unassigned__">Unassigned (No Team)</option>';
+  teams.forEach(function(t) {
+    html += '<option value="' + t.id + '">' + t.name + '</option>';
+  });
+  teamFilter.innerHTML = html;
+  if (userDirFilters.teamId) {
+    teamFilter.value = userDirFilters.teamId;
   }
 }
 
@@ -293,6 +359,27 @@ async function populateDependsOnCheckboxes() {
   container.innerHTML = html;
 }
 
+// -------------------------------------------------------------
+// ORGANIZATION USER DIRECTORY — FULL CRUD & FILTERING
+// -------------------------------------------------------------
+
+function resetUserDirectoryFilters() {
+  userDirFilters.query = '';
+  userDirFilters.role = '';
+  userDirFilters.teamId = '';
+
+  var searchInput = document.getElementById('user-dir-search');
+  if (searchInput) searchInput.value = '';
+
+  var roleFilter = document.getElementById('user-dir-role-filter');
+  if (roleFilter) roleFilter.value = '';
+
+  var teamFilter = document.getElementById('user-dir-team-filter');
+  if (teamFilter) teamFilter.value = '';
+
+  renderUserDirectory();
+}
+
 async function renderUserDirectory() {
   var container = document.getElementById('user-directory');
   if (!container) return;
@@ -300,40 +387,500 @@ async function renderUserDirectory() {
   var companyId = getCurrentCompanyId();
   var users = await api.get('users', { companyId: companyId });
   var teams = await getAllTeams();
+  var currentUser = getCurrentUser();
+
+  var totalCount = users.length;
+
+  // Filter users
+  var filteredUsers = users.filter(function(user) {
+    if (userDirFilters.query) {
+      var q = userDirFilters.query;
+      var nameMatch = (user.name || '').toLowerCase().indexOf(q) !== -1;
+      var emailMatch = (user.email || '').toLowerCase().indexOf(q) !== -1;
+      if (!nameMatch && !emailMatch) return false;
+    }
+
+    if (userDirFilters.role) {
+      if (user.role !== userDirFilters.role) return false;
+    }
+
+    if (userDirFilters.teamId) {
+      if (userDirFilters.teamId === '__unassigned__') {
+        if (user.teamId) return false;
+      } else {
+        if (user.teamId !== userDirFilters.teamId) return false;
+      }
+    }
+
+    return true;
+  });
+
+  // Update count badge & reset filter button
+  var countBadge = document.getElementById('user-dir-count');
+  if (countBadge) {
+    if (filteredUsers.length === totalCount) {
+      countBadge.textContent = totalCount + (totalCount === 1 ? ' Member' : ' Members');
+    } else {
+      countBadge.textContent = filteredUsers.length + ' of ' + totalCount + ' Members';
+    }
+  }
+
+  var resetBtn = document.getElementById('user-dir-reset-filter');
+  if (resetBtn) {
+    var hasActiveFilter = Boolean(userDirFilters.query || userDirFilters.role || userDirFilters.teamId);
+    resetBtn.style.display = hasActiveFilter ? 'inline-flex' : 'none';
+  }
+
+  if (filteredUsers.length === 0) {
+    container.innerHTML =
+      '<div style="padding: 2.5rem; text-align: center; color: var(--text-muted);">' +
+        '<div style="font-size:1.75rem; margin-bottom:0.5rem; opacity:0.6;">👥</div>' +
+        '<div style="font-weight:600; font-size:0.95rem; margin-bottom:0.25rem;">No members found</div>' +
+        '<div style="font-size:0.8rem; color:var(--text-subtle); margin-bottom:1rem;">Try adjusting your search query or role/team filters.</div>' +
+        (userDirFilters.query || userDirFilters.role || userDirFilters.teamId ? '<button type="button" class="btn btn--sm btn--outline" onclick="resetUserDirectoryFilters()">Clear Filters</button>' : '') +
+      '</div>';
+    return;
+  }
 
   var html =
     '<table style="width:100%; border-collapse: collapse; text-align: left;">' +
       '<thead>' +
-        '<tr style="border-bottom: 1px solid var(--border-color);">' +
-          '<th style="padding: 0.75rem;">Name</th>' +
-          '<th style="padding: 0.75rem;">Email</th>' +
-          '<th style="padding: 0.75rem;">Role</th>' +
-          '<th style="padding: 0.75rem;">Team</th>' +
+        '<tr style="border-bottom: 1px solid var(--border-color); background:var(--bg-base);">' +
+          '<th style="padding: 0.75rem 1rem; font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Member</th>' +
+          '<th style="padding: 0.75rem 1rem; font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Email Address</th>' +
+          '<th style="padding: 0.75rem 1rem; font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Role / Tier</th>' +
+          '<th style="padding: 0.75rem 1rem; font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Assigned Team</th>' +
+          '<th style="padding: 0.75rem 1rem; font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; text-align:right;">Actions</th>' +
         '</tr>' +
       '</thead>' +
       '<tbody>';
 
-  users.forEach(function(user) {
-    var teamName = 'None';
+  filteredUsers.forEach(function(user) {
+    var teamName = 'Unassigned';
+    var teamBadgeClass = 'badge--info';
     if (user.teamId) {
       var match = teams.filter(function(t) { return t.id === user.teamId; });
-      if (match.length > 0) teamName = match[0].name;
+      if (match.length > 0) {
+        teamName = match[0].name;
+        if (teamName.toLowerCase() === 'admin') teamBadgeClass = 'badge--company_admin';
+      }
     }
 
-    var roleLabel = user.role === 'junior' ? 'SDE I (Junior)' : (user.role === 'senior' ? 'SDE II (Senior)' : (user.role === 'teamadmin' ? 'Tech Lead' : (user.role === 'company_admin' ? 'Company Admin' : (user.role === 'platform_superadmin' ? 'Platform Admin' : user.role))));
+    var roleLabel = user.role === 'junior' ? 'SDE I (Junior)' :
+      (user.role === 'senior' ? 'SDE II (Senior)' :
+      (user.role === 'teamadmin' ? 'Tech Lead' :
+      (user.role === 'company_admin' ? 'Company Admin' :
+      (user.role === 'platform_superadmin' ? 'Platform Admin' : user.role))));
+
+    var isSelf = currentUser && (currentUser.id === user.id || currentUser.email === user.email);
+    var selfTag = isSelf ? ' <span style="font-size:0.7rem; color:var(--primary); font-weight:700; background:rgba(0,0,0,0.06); padding:2px 6px; border-radius:4px; margin-left:4px;">You</span>' : '';
+
+    var initials = (user.name || 'U').split(' ').map(function(w){return w[0];}).join('').substring(0, 2).toUpperCase();
 
     html +=
-      '<tr style="border-bottom: 1px solid var(--border-color);">' +
-        '<td style="padding: 0.75rem; font-weight:600;">' + user.name + '</td>' +
-        '<td style="padding: 0.75rem; color: var(--text-muted);">' + user.email + '</td>' +
-        '<td style="padding: 0.75rem;"><span class="badge badge--' + user.role + '">' + roleLabel + '</span></td>' +
-        '<td style="padding: 0.75rem;">' + teamName + '</td>' +
+      '<tr style="border-bottom: 1px solid var(--border-color); transition:background 0.15s ease;" onmouseover="this.style.background=\'var(--bg-surface-hover)\'" onmouseout="this.style.background=\'transparent\'">' +
+        '<td style="padding: 0.85rem 1rem;">' +
+          '<div style="display:flex; align-items:center; gap:0.65rem;">' +
+            '<div style="width:30px; height:30px; border-radius:50%; background:var(--primary); color:var(--text-invert); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; flex-shrink:0;">' + initials + '</div>' +
+            '<div>' +
+              '<div style="font-weight:600; color:var(--text-main); font-size:0.875rem;">' + user.name + selfTag + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</td>' +
+        '<td style="padding: 0.85rem 1rem; color: var(--text-muted); font-size:0.825rem; font-family:var(--font-mono);">' + user.email + '</td>' +
+        '<td style="padding: 0.85rem 1rem;"><span class="badge badge--' + user.role + '" style="font-size:0.7rem;">' + roleLabel + '</span></td>' +
+        '<td style="padding: 0.85rem 1rem;">' +
+          (user.teamId ? '<span class="badge ' + teamBadgeClass + '" style="font-size:0.75rem; font-weight:600;">' + teamName + '</span>' : '<span style="color:var(--text-subtle); font-size:0.8rem; font-style:italic;">None (Unassigned)</span>') +
+        '</td>' +
+        '<td style="padding: 0.85rem 1rem; text-align:right; white-space:nowrap;">' +
+          '<button type="button" class="btn btn--sm btn--outline" style="margin-right:6px; padding:0.25rem 0.65rem;" onclick="openEditUserModal(\'' + user.id + '\')">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-right:3px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>' +
+            'Edit' +
+          '</button>' +
+          '<button type="button" class="btn btn--sm btn--danger" style="padding:0.25rem 0.65rem;" onclick="confirmDeleteUser(\'' + user.id + '\')">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-right:3px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>' +
+            'Delete' +
+          '</button>' +
+        '</td>' +
       '</tr>';
   });
 
   html += '</tbody></table>';
   container.innerHTML = html;
 }
+
+// -------------------------------------------------------------
+// ADD USER MODAL HANDLERS
+// -------------------------------------------------------------
+
+async function openAddUserModal() {
+  var modal = document.getElementById('user-add-modal');
+  if (!modal) return;
+
+  var teams = await getAllTeams();
+  var teamSelect = document.getElementById('add-modal-team');
+  if (teamSelect) {
+    var html = '<option value="">-- No Team (Unassigned) --</option>';
+    teams.forEach(function(t) {
+      html += '<option value="' + t.id + '">' + t.name + '</option>';
+    });
+    teamSelect.innerHTML = html;
+  }
+
+  var form = document.getElementById('modal-add-user-form');
+  if (form) form.reset();
+
+  modal.style.display = 'flex';
+  document.getElementById('add-modal-name').focus();
+}
+
+function closeAddUserModal() {
+  var modal = document.getElementById('user-add-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function handleAddUserSubmit(e) {
+  e.preventDefault();
+
+  var name = document.getElementById('add-modal-name').value.trim();
+  var email = document.getElementById('add-modal-email').value.trim();
+  var password = document.getElementById('add-modal-password').value;
+  var role = document.getElementById('add-modal-role').value;
+  var teamId = document.getElementById('add-modal-team').value;
+  var companyId = getCurrentCompanyId();
+
+  if (!name || !email || !password) {
+    showToast('Name, email, and password are required.', 'error');
+    return;
+  }
+
+  // Check email duplicate across system
+  var existing = await api.get('users', { email: email });
+  if (existing.length > 0) {
+    showToast('An account with email "' + email + '" already exists.', 'error');
+    return;
+  }
+
+  var newUserId = generateId();
+  var newUser = {
+    id: newUserId,
+    companyId: companyId,
+    name: name,
+    email: email,
+    password: password,
+    role: role || 'junior',
+    teamId: teamId || null
+  };
+
+  try {
+    await api.post('users', newUser);
+
+    // Update team memberIds if team assigned
+    if (teamId) {
+      var team = await api.getById('teams', teamId);
+      if (team) {
+        var memberIds = team.memberIds || [];
+        if (memberIds.indexOf(newUserId) === -1) {
+          memberIds.push(newUserId);
+          await api.patch('teams', teamId, { memberIds: memberIds });
+        }
+      }
+    }
+
+    if (typeof logAction === 'function') {
+      var currentUser = getCurrentUser();
+      var userName = currentUser ? currentUser.name : 'Company Admin';
+      await logAction('USER_CREATED', 'User ' + name + ' (' + role + ') added to directory', newUserId, userName, companyId);
+    }
+
+    showToast('User "' + name + '" created successfully!', 'success');
+    closeAddUserModal();
+
+    await renderUserDirectory();
+    await populateMemberUserDropdown();
+    await populateTeamDropdowns();
+    if (typeof renderTeamList === 'function') await renderTeamList('admin-team-list');
+  } catch(ex) {
+    showToast(ex.message || 'Error creating user.', 'error');
+  }
+}
+
+// -------------------------------------------------------------
+// EDIT USER MODAL HANDLERS
+// -------------------------------------------------------------
+
+async function openEditUserModal(userId) {
+  var modal = document.getElementById('user-edit-modal');
+  if (!modal) return;
+
+  try {
+    var user = await api.getById('users', userId);
+    if (!user) {
+      showToast('User not found.', 'error');
+      return;
+    }
+
+    document.getElementById('edit-modal-id').value = user.id;
+    document.getElementById('edit-modal-name').value = user.name || '';
+    document.getElementById('edit-modal-email').value = user.email || '';
+    document.getElementById('edit-modal-password').value = '';
+    document.getElementById('edit-modal-role').value = user.role || 'junior';
+
+    var idBadge = document.getElementById('edit-user-id-badge');
+    if (idBadge) idBadge.textContent = 'User ID: ' + user.id;
+
+    var teams = await getAllTeams();
+    var teamSelect = document.getElementById('edit-modal-team');
+    if (teamSelect) {
+      var html = '<option value="">-- No Team (Unassigned) --</option>';
+      teams.forEach(function(t) {
+        var sel = user.teamId === t.id ? ' selected' : '';
+        html += '<option value="' + t.id + '"' + sel + '>' + t.name + '</option>';
+      });
+      teamSelect.innerHTML = html;
+    }
+
+    modal.style.display = 'flex';
+    document.getElementById('edit-modal-name').focus();
+  } catch(ex) {
+    showToast('Failed to load user details: ' + ex.message, 'error');
+  }
+}
+
+function closeEditUserModal() {
+  var modal = document.getElementById('user-edit-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function handleEditUserSubmit(e) {
+  e.preventDefault();
+
+  var userId = document.getElementById('edit-modal-id').value;
+  var name = document.getElementById('edit-modal-name').value.trim();
+  var email = document.getElementById('edit-modal-email').value.trim();
+  var newPassword = document.getElementById('edit-modal-password').value;
+  var role = document.getElementById('edit-modal-role').value;
+  var newTeamId = document.getElementById('edit-modal-team').value || null;
+
+  if (!userId || !name || !email) {
+    showToast('Name and email are required.', 'error');
+    return;
+  }
+
+  try {
+    var originalUser = await api.getById('users', userId);
+    if (!originalUser) {
+      showToast('User record not found.', 'error');
+      return;
+    }
+
+    // Check if new email is used by another user
+    if (email.toLowerCase() !== (originalUser.email || '').toLowerCase()) {
+      var existing = await api.get('users', { email: email });
+      var conflict = existing.some(function(u) { return u.id !== userId; });
+      if (conflict) {
+        showToast('Email "' + email + '" is already in use by another account.', 'error');
+        return;
+      }
+    }
+
+    var payload = {
+      name: name,
+      email: email,
+      role: role,
+      teamId: newTeamId
+    };
+
+    if (newPassword) {
+      payload.password = newPassword;
+    }
+
+    await api.patch('users', userId, payload);
+
+    // Handle Team membership reassignment
+    var oldTeamId = originalUser.teamId;
+    if (oldTeamId && oldTeamId !== newTeamId) {
+      try {
+        var oldTeam = await api.getById('teams', oldTeamId);
+        if (oldTeam && Array.isArray(oldTeam.memberIds)) {
+          var updatedOldMemberIds = oldTeam.memberIds.filter(function(id) { return id !== userId; });
+          await api.patch('teams', oldTeamId, { memberIds: updatedOldMemberIds });
+        }
+      } catch(ex) {
+        console.warn('Could not remove user from previous team:', ex);
+      }
+    }
+
+    if (newTeamId && oldTeamId !== newTeamId) {
+      try {
+        var newTeam = await api.getById('teams', newTeamId);
+        if (newTeam) {
+          var newMemberIds = newTeam.memberIds || [];
+          if (newMemberIds.indexOf(userId) === -1) {
+            newMemberIds.push(userId);
+            await api.patch('teams', newTeamId, { memberIds: newMemberIds });
+          }
+        }
+      } catch(ex) {
+        console.warn('Could not add user to new team:', ex);
+      }
+    }
+
+    // If updating current logged in user, refresh sessionStorage
+    var currentUser = getCurrentUser();
+    if (currentUser && currentUser.id === userId) {
+      currentUser.name = name;
+      currentUser.email = email;
+      currentUser.role = role;
+      currentUser.teamId = newTeamId;
+      sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+
+      var sidebarUser = document.getElementById('sidebar-user');
+      if (sidebarUser) {
+        var roleDisplay = role === 'company_admin' ? 'Company Admin' : (role === 'platform_superadmin' ? 'Platform Admin' : role.charAt(0).toUpperCase() + role.slice(1));
+        sidebarUser.innerHTML =
+          '<div class="sidebar__user-info">' +
+            '<div style="flex:1; min-width:0;">' +
+              '<div class="sidebar__user-name">' + name + '</div>' +
+              '<span class="badge badge--' + role + '" style="font-size:0.65rem;">' + roleDisplay + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<button class="sidebar__logout" onclick="logout()">Sign out</button>';
+      }
+    }
+
+    if (typeof logAction === 'function') {
+      var actorName = currentUser ? currentUser.name : 'Admin';
+      await logAction('USER_UPDATED', 'User ' + name + ' profile and team assignment updated', userId, actorName, getCurrentCompanyId());
+    }
+
+    showToast('User "' + name + '" updated successfully!', 'success');
+    closeEditUserModal();
+
+    await renderUserDirectory();
+    await populateMemberUserDropdown();
+    await populateTeamDropdowns();
+    if (typeof renderTeamList === 'function') await renderTeamList('admin-team-list');
+
+    var manageTeamSelect = document.getElementById('manage-team-select');
+    if (manageTeamSelect && manageTeamSelect.value) {
+      await renderTeamMembers(manageTeamSelect.value);
+    }
+  } catch(ex) {
+    showToast('Error updating user: ' + ex.message, 'error');
+  }
+}
+
+// -------------------------------------------------------------
+// DELETE USER MODAL & EXECUTION
+// -------------------------------------------------------------
+
+async function confirmDeleteUser(userId) {
+  var modal = document.getElementById('user-delete-modal');
+  if (!modal) return;
+
+  try {
+    var user = await api.getById('users', userId);
+    if (!user) {
+      showToast('User not found.', 'error');
+      return;
+    }
+
+    // Safety check: Prevent deleting the only Company Admin in workspace
+    if (user.role === 'company_admin') {
+      var companyId = getCurrentCompanyId();
+      var allCompanyUsers = await api.get('users', { companyId: companyId });
+      var adminCount = allCompanyUsers.filter(function(u) { return u.role === 'company_admin'; }).length;
+      if (adminCount <= 1) {
+        showToast('Cannot delete this user. At least one Company Admin must remain to manage the workspace.', 'error');
+        return;
+      }
+    }
+
+    document.getElementById('delete-modal-user-id').value = user.id;
+    var promptEl = document.getElementById('delete-modal-prompt');
+    if (promptEl) {
+      promptEl.innerHTML = 'Are you sure you want to delete user <strong>' + user.name + '</strong> (<span class="mono">' + user.email + '</span>)?<br><br><span style="font-size:0.8rem; color:var(--status-critical);">This will permanently delete their account and revoke all team assignments.</span>';
+    }
+
+    modal.style.display = 'flex';
+  } catch(ex) {
+    showToast('Failed to retrieve user: ' + ex.message, 'error');
+  }
+}
+
+function closeDeleteUserModal() {
+  var modal = document.getElementById('user-delete-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function executeDeleteUser() {
+  var userId = document.getElementById('delete-modal-user-id').value;
+  if (!userId) return;
+
+  var confirmBtn = document.getElementById('delete-modal-confirm-btn');
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Deleting...';
+  }
+
+  try {
+    var user = await api.getById('users', userId);
+    var userName = user ? user.name : 'User';
+    var teamId = user ? user.teamId : null;
+
+    // Remove user from team memberIds if assigned
+    if (teamId) {
+      try {
+        var team = await api.getById('teams', teamId);
+        if (team && Array.isArray(team.memberIds)) {
+          var updatedMemberIds = team.memberIds.filter(function(id) { return id !== userId; });
+          await api.patch('teams', teamId, { memberIds: updatedMemberIds });
+        }
+      } catch(ex) {
+        console.warn('Could not remove user from team roster:', ex);
+      }
+    }
+
+    await api.delete('users', userId);
+
+    if (typeof logAction === 'function') {
+      var currentUser = getCurrentUser();
+      var actorName = currentUser ? currentUser.name : 'Company Admin';
+      await logAction('USER_DELETED', 'User ' + userName + ' was deleted from the organization', userId, actorName, getCurrentCompanyId());
+    }
+
+    showToast('User "' + userName + '" was deleted.', 'success');
+    closeDeleteUserModal();
+
+    var currentUser = getCurrentUser();
+    if (currentUser && currentUser.id === userId) {
+      logout();
+      return;
+    }
+
+    await renderUserDirectory();
+    await populateMemberUserDropdown();
+    await populateTeamDropdowns();
+    if (typeof renderTeamList === 'function') await renderTeamList('admin-team-list');
+
+    var manageTeamSelect = document.getElementById('manage-team-select');
+    if (manageTeamSelect && manageTeamSelect.value) {
+      await renderTeamMembers(manageTeamSelect.value);
+    }
+  } catch(ex) {
+    showToast('Failed to delete user: ' + ex.message, 'error');
+  } finally {
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Delete Account';
+    }
+  }
+}
+
+// -------------------------------------------------------------
+// INVITE CODE GENERATION & COPY
+// -------------------------------------------------------------
 
 async function generateInviteCode() {
   var companyId = getCurrentCompanyId();

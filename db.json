@@ -43,7 +43,7 @@
       "email": "aditya@soterstore.com",
       "password": "admin123",
       "role": "company_admin",
-      "teamId": "team-checkout-01"
+      "teamId": "team-admin-01"
     },
     {
       "id": "usr-admin-adtiya-alias",
@@ -52,7 +52,7 @@
       "email": "adtiya@soterstore.com",
       "password": "admin123",
       "role": "company_admin",
-      "teamId": "team-checkout-01"
+      "teamId": "team-admin-01"
     },
     {
       "id": "usr-chk-01",
@@ -165,12 +165,21 @@
       ]
     },
     {
+      "id": "team-admin-01",
+      "companyId": "mt0gjk7yj6qpxy",
+      "name": "Admin",
+      "description": "Executive & Company Administration Team",
+      "memberIds": [
+        "usr-admin-aditya",
+        "usr-admin-adtiya-alias"
+      ]
+    },
+    {
       "id": "team-checkout-01",
       "companyId": "mt0gjk7yj6qpxy",
       "name": "Checkout",
       "description": "Manages user cart and checkout processing pipeline",
       "memberIds": [
-        "usr-admin-aditya",
         "usr-chk-01",
         "usr-chk-02",
         "usr-chk-03"

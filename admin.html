@@ -251,11 +251,158 @@
 
     <hr class="divider">
 
-    
+    <!-- Organization User Directory Section -->
     <div class="section" style="margin-bottom: 2rem;">
-      <h2 class="section__title" style="margin-bottom: 0.875rem; font-size:1.15rem;">Organization User Directory</h2>
-      <div class="card" id="user-directory" style="overflow-x:auto; padding:0.5rem 1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.875rem; flex-wrap:wrap; gap:0.75rem;">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <h2 class="section__title" style="margin:0; font-size:1.15rem;">Organization User Directory</h2>
+          <span class="badge badge--info" id="user-dir-count" style="font-size:0.75rem;">Loading users...</span>
+        </div>
+        <button type="button" class="btn btn--primary btn--sm" onclick="openAddUserModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-right:2px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Add New User
+        </button>
+      </div>
+
+      <!-- Directory Filters & Search Toolbar -->
+      <div class="card" style="padding:0.875rem 1.25rem; margin-bottom:1rem;">
+        <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; justify-content:space-between;">
+          <div style="display:flex; gap:0.625rem; align-items:center; flex:1; min-width:240px; max-width:420px;">
+            <input type="text" id="user-dir-search" class="form-input" placeholder="Search by name or email..." style="margin-bottom:0; font-size:0.825rem; padding:0.45rem 0.75rem;">
+          </div>
+          <div style="display:flex; gap:0.625rem; align-items:center; flex-wrap:wrap;">
+            <select id="user-dir-role-filter" class="form-select" style="margin-bottom:0; font-size:0.825rem; padding:0.45rem 0.75rem; min-width:140px;">
+              <option value="">All Roles</option>
+              <option value="company_admin">Company Admin</option>
+              <option value="teamadmin">Tech Lead (Team Admin)</option>
+              <option value="senior">SDE II (Senior)</option>
+              <option value="junior">SDE I (Junior)</option>
+            </select>
+            <select id="user-dir-team-filter" class="form-select" style="margin-bottom:0; font-size:0.825rem; padding:0.45rem 0.75rem; min-width:140px;">
+              <option value="">All Teams</option>
+            </select>
+            <button type="button" class="btn btn--outline btn--sm" id="user-dir-reset-filter" onclick="resetUserDirectoryFilters()" style="display:none;">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="user-directory" style="overflow-x:auto; padding:0;">
         
+      </div>
+    </div>
+
+    <!-- ADD USER MODAL -->
+    <div id="user-add-modal" class="modal-overlay" style="display:none;">
+      <div class="modal-box" style="max-width:480px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+          <h3 style="margin:0; font-size:1.15rem; font-weight:700;">Add New User</h3>
+          <button type="button" class="btn btn--outline btn--sm" onclick="closeAddUserModal()" style="border:none; padding:4px 8px; font-size:1rem; cursor:pointer;">&times;</button>
+        </div>
+        <form id="modal-add-user-form">
+          <div class="form-group">
+            <label class="form-label" for="add-modal-name">Full Name</label>
+            <input class="form-input" type="text" id="add-modal-name" placeholder="e.g. Maya Lin" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="add-modal-email">Email Address</label>
+            <input class="form-input" type="email" id="add-modal-email" placeholder="e.g. maya@soterstore.com" required>
+          </div>
+          <div class="two-col" style="gap:0.75rem; margin-bottom:0.875rem;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="add-modal-password">Password</label>
+              <input class="form-input" type="password" id="add-modal-password" placeholder="Create password" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="add-modal-role">Role / Tier</label>
+              <select class="form-select" id="add-modal-role" required>
+                <option value="junior">SDE I (Junior)</option>
+                <option value="senior">SDE II (Senior)</option>
+                <option value="teamadmin">Tech Lead (Team Admin)</option>
+                <option value="company_admin">Company Admin</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="add-modal-team">Assigned Team</label>
+            <select class="form-select" id="add-modal-team">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:0.625rem; margin-top:1.25rem;">
+            <button type="button" class="btn btn--outline" onclick="closeAddUserModal()">Cancel</button>
+            <button type="submit" class="btn btn--primary">Create User</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- EDIT USER MODAL -->
+    <div id="user-edit-modal" class="modal-overlay" style="display:none;">
+      <div class="modal-box" style="max-width:480px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+          <div>
+            <h3 style="margin:0; font-size:1.15rem; font-weight:700;">Edit User</h3>
+            <span id="edit-user-id-badge" style="font-size:0.7rem; color:var(--text-subtle); font-family:var(--font-mono);"></span>
+          </div>
+          <button type="button" class="btn btn--outline btn--sm" onclick="closeEditUserModal()" style="border:none; padding:4px 8px; font-size:1rem; cursor:pointer;">&times;</button>
+        </div>
+        <form id="modal-edit-user-form">
+          <input type="hidden" id="edit-modal-id">
+          <div class="form-group">
+            <label class="form-label" for="edit-modal-name">Full Name</label>
+            <input class="form-input" type="text" id="edit-modal-name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-modal-email">Email Address</label>
+            <input class="form-input" type="email" id="edit-modal-email" required>
+          </div>
+          <div class="two-col" style="gap:0.75rem; margin-bottom:0.875rem;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="edit-modal-password">Reset Password <span style="font-size:0.7rem; color:var(--text-subtle); font-weight:normal;">(optional)</span></label>
+              <input class="form-input" type="password" id="edit-modal-password" placeholder="Leave blank to keep current">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="edit-modal-role">Role / Tier</label>
+              <select class="form-select" id="edit-modal-role" required>
+                <option value="junior">SDE I (Junior)</option>
+                <option value="senior">SDE II (Senior)</option>
+                <option value="teamadmin">Tech Lead (Team Admin)</option>
+                <option value="company_admin">Company Admin</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-modal-team">Assigned Team</label>
+            <select class="form-select" id="edit-modal-team">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:0.625rem; margin-top:1.25rem;">
+            <button type="button" class="btn btn--outline" onclick="closeEditUserModal()">Cancel</button>
+            <button type="submit" class="btn btn--primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- DELETE USER MODAL -->
+    <div id="user-delete-modal" class="modal-overlay" style="display:none;">
+      <div class="modal-box" style="max-width:440px;">
+        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+          <div style="width:40px; height:40px; border-radius:50%; background:var(--status-critical-bg); color:var(--status-critical); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </div>
+          <div>
+            <h3 style="margin:0; font-size:1.1rem; font-weight:700;">Delete User</h3>
+            <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">Permanently remove member account</p>
+          </div>
+        </div>
+        <p id="delete-modal-prompt" style="font-size:0.875rem; color:var(--text-main); margin-bottom:1.25rem;">Are you sure you want to delete this user?</p>
+        <input type="hidden" id="delete-modal-user-id">
+        <div style="display:flex; justify-content:flex-end; gap:0.625rem;">
+          <button type="button" class="btn btn--outline" onclick="closeDeleteUserModal()">Cancel</button>
+          <button type="button" class="btn btn--danger" id="delete-modal-confirm-btn" onclick="executeDeleteUser()">Delete Account</button>
+        </div>
       </div>
     </div>
 

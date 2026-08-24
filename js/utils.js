@@ -73,10 +73,19 @@ function initKeyboardShortcuts() {
     if (e.key === 'Escape') {
       var modal = document.getElementById('confirm-modal');
       if (modal) modal.remove();
+
+      var openOverlays = document.querySelectorAll('.modal-overlay');
+      openOverlays.forEach(function(ov) {
+        if (ov.id === 'user-add-modal' || ov.id === 'user-edit-modal' || ov.id === 'user-delete-modal') {
+          ov.style.display = 'none';
+        } else if (ov.id === 'confirm-modal' || ov.id === 'details-modal') {
+          ov.remove();
+        }
+      });
     }
 
     if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-      var searchInput = document.getElementById('search-incidents');
+      var searchInput = document.getElementById('search-incidents') || document.getElementById('user-dir-search');
       if (searchInput) {
         e.preventDefault();
         searchInput.focus();
