@@ -102,6 +102,7 @@ async function createIncident(title, serviceId, severity, description, assignTo)
     await logEscalation(primary.id, 'INCIDENT_CREATED', onCall ? onCall.id : null, 'Primary incident created for ' + title);
   }
 
+  var crossIncidents = [];
   try {
     var notifiedSet = new Set(); 
     var dependents = await getReverseDependencies(serviceId, new Set());
@@ -134,6 +135,8 @@ async function createIncident(title, serviceId, severity, description, assignTo)
         serviceId              
       );
 
+      crossIncidents.push({ incident: crossIncident, service: depService, onCall: depOnCall });
+
       if (typeof logEscalation === 'function') {
         await logEscalation(
           crossIncident.id,
@@ -155,7 +158,23 @@ async function createIncident(title, serviceId, severity, description, assignTo)
     var primarySvc = await api.getById('services', serviceId);
     var primaryAssigned = primary.assignedUserId ? await api.getById('users', primary.assignedUserId) : null;
     var primaryAssignedLabel = primaryAssigned ? primaryAssigned.name + ' (' + (primaryAssigned.role === 'junior' ? 'SDE I' : (primaryAssigned.role === 'senior' ? 'SDE II' : 'Tech Lead')) + ')' : null;
-    showIncidentPopup(primary, primarySvc, primaryAssignedLabel);
+
+    var currentUser = getCurrentUser();
+    if (currentUser) {
+      var isSuperOrAdmin = currentUser.role === 'company_admin' || currentUser.role === 'superadmin' || currentUser.role === 'platform_superadmin';
+      if (isSuperOrAdmin || (primarySvc && primarySvc.teamId === currentUser.teamId) || primary.assignedUserId === currentUser.id) {
+        showIncidentPopup(primary, primarySvc, primaryAssignedLabel);
+      } else {
+        var myCross = crossIncidents.find(function(ci) {
+          return (ci.service && ci.service.teamId === currentUser.teamId) || (ci.incident && ci.incident.assignedUserId === currentUser.id);
+        });
+        if (myCross) {
+          var crossAssigned = myCross.onCall;
+          var crossAssignedLabel = crossAssigned ? crossAssigned.name + ' (' + (crossAssigned.role === 'junior' ? 'SDE I' : (crossAssigned.role === 'senior' ? 'SDE II' : 'Tech Lead')) + ')' : null;
+          showIncidentPopup(myCross.incident, myCross.service, crossAssignedLabel);
+        }
+      }
+    }
   } catch (e) {}
 
   if (typeof updateStatsBar === 'function') await updateStatsBar();
@@ -708,6 +727,16 @@ var poppedIncidentIds = new Set();
 
 function showIncidentPopup(inc, service, responderName) {
   if (!inc || poppedIncidentIds.has(inc.id)) return;
+
+  var currentUser = getCurrentUser();
+  if (currentUser && currentUser.role !== 'company_admin' && currentUser.role !== 'superadmin' && currentUser.role !== 'platform_superadmin') {
+    var isAssignedToMe = inc.assignedUserId && inc.assignedUserId === currentUser.id;
+    var isMyTeamService = service && service.teamId === currentUser.teamId;
+    if (!isAssignedToMe && !isMyTeamService) {
+      return;
+    }
+  }
+
   poppedIncidentIds.add(inc.id);
 
   if (document.getElementById('incident-popup-modal')) return;

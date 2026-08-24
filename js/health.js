@@ -164,7 +164,16 @@ async function handleCheckResult(service, isHealthy, errorDetail) {
 
         await api.patch('services', service.id, { status: 'healthy', lastError: null });
         if (openIncidents.length > 0) {
-          showToast && showToast(service.name + ' is back online — incidents auto-resolved', 'success');
+          var currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+          var isRelevant = true;
+          if (currentUser && currentUser.role !== 'company_admin' && currentUser.role !== 'superadmin' && currentUser.role !== 'platform_superadmin') {
+            isRelevant = service.teamId === currentUser.teamId || openIncidents.some(function(inc) {
+              return inc.assignedUserId === currentUser.id;
+            });
+          }
+          if (isRelevant) {
+            showToast && showToast(service.name + ' is back online — incidents auto-resolved', 'success');
+          }
         }
       } catch (e) {
         console.warn('[HealthEngine] Error during auto-resolve:', e);
