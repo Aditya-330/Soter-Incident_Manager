@@ -340,7 +340,7 @@ function startSLATimers() {
           }
         } else {
           el.textContent = "SLA Breached (No higher escalations)";
-          el.style.color = 'var(--critical)';
+          el.style.color = 'var(--status-critical)';
           if (el.dataset.breached === 'false') {
             el.dataset.breached = 'true';
             markSlaBreached(id);
@@ -354,9 +354,9 @@ function startSLATimers() {
         var pct = getTimerPercent(createdAt, deadline);
         barEls[index].style.width = pct + '%';
         if (pct < 25) {
-          barEls[index].style.background = 'var(--critical)';
+          barEls[index].style.background = 'var(--status-critical)';
         } else if (pct < 50) {
-          barEls[index].style.background = 'var(--warning)';
+          barEls[index].style.background = 'var(--status-high)';
         }
       }
     });
@@ -611,13 +611,13 @@ async function renderIncidentList(containerId, filters) {
 
     var crossTeamBadge = '';
     if (inc.isCrossTeam) {
-      crossTeamBadge = '<span class="badge badge--cross-team" style="margin-left:8px;">Dependency Alert</span>';
+      crossTeamBadge = '<span class="badge badge--cross-team" style="margin-left:8px; white-space:nowrap; flex-shrink:0;">Dependency Alert</span>';
     }
 
     var statusDropdown = '';
     if (inc.status === 'open') {
       statusDropdown =
-        '<select class="form-select form-select--sm" onchange="handleStatusChange(\'' + inc.id + '\', this.value)">' +
+        '<select class="form-select form-select--sm" style="width:auto; min-width:140px;" onchange="handleStatusChange(\'' + inc.id + '\', this.value)">' +
           '<option value="open" selected>Open</option>' +
           '<option value="acknowledged">Acknowledged</option>' +
           '<option value="resolved">Resolved</option>' +
@@ -625,7 +625,7 @@ async function renderIncidentList(containerId, filters) {
     } else if (inc.status === 'acknowledged') {
 
       statusDropdown =
-        '<select class="form-select form-select--sm" onchange="handleStatusChange(\'' + inc.id + '\', this.value)">' +
+        '<select class="form-select form-select--sm" style="width:auto; min-width:140px;" onchange="handleStatusChange(\'' + inc.id + '\', this.value)">' +
           '<option value="acknowledged" selected>Acknowledged</option>' +
           '<option value="resolved">Resolve</option>' +
         '</select>';
@@ -675,10 +675,10 @@ async function renderIncidentList(containerId, filters) {
 
     html +=
       '<div class="card card--incident ' + pulseClass + ' ' + crossTeamClass + '">' +
-        '<div class="card__header-row" style="flex-wrap: nowrap; gap: 1rem;">' +
-          '<div style="display:flex; align-items:center; min-width:0; flex:1;">' +
+        '<div class="card__header-row" style="flex-wrap: nowrap; gap: 0.75rem; align-items: center;">' +
+          '<div style="display:flex; align-items:center; min-width:0; flex:1; gap:0.5rem;">' +
             checkboxHtml +
-            '<h3 class="card__title" style="margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="' + inc.title + '">' + inc.title + '</h3>' +
+            '<h3 class="card__title" style="margin:0; min-width:0; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="' + inc.title + '">' + inc.title + '</h3>' +
             crossTeamBadge +
           '</div>' +
           '<span class="badge badge--' + inc.severity + '" style="flex-shrink:0;">' + inc.severity + '</span>' +
@@ -687,8 +687,8 @@ async function renderIncidentList(containerId, filters) {
         '<p class="card__text" style="font-size:0.8125rem; margin-bottom:0.35rem;"><span style="color:var(--text-muted);">Assigned Responder:</span> <strong>' + assignedName + '</strong></p>' +
         '<p class="card__text text-muted" style="font-size:0.775rem;" title="' + timeStr + '">Created: ' + relativeTimeStr + '</p>' +
         timerHtml +
-        '<div class="card__footer" style="margin-top:0.625rem; justify-content:space-between; align-items:center;">' +
-          '<div style="display:flex; align-items:center; gap:0.625rem;">' +
+        '<div class="card__footer" style="margin-top:0.625rem; justify-content:space-between; align-items:center; flex-wrap:nowrap; gap:0.75rem;">' +
+          '<div style="display:flex; align-items:center; gap:0.625rem; flex-wrap:wrap;">' +
             '<span class="badge badge--status-' + inc.status + '">' + inc.status + '</span>' +
             ackText +
             trailToggle +
