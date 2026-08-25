@@ -53,7 +53,7 @@
                                                            ▼
                                             ┌─────────────────────────────┐
                                             │   EXTERNAL MONITORED APIs   │
-                                            │  (e.g., Netlify endpoints,  │
+                                            │  (e.g., Render endpoints,   │
                                             │   payment/checkout micro-   │
                                             │   services, 3rd-party APIs) │
                                             └─────────────────────────────┘
@@ -81,10 +81,10 @@ Browsers enforce the **Same-Origin Policy (SOP)** and **CORS (Cross-Origin Resou
 
 #### Client-Side Flow (`js/health.js`):
 1. `runDueHealthChecks()` iterates over all registered services in `db.json`.
-2. For a service configured with `checkMethod: "GET"` and URL `https://soter-demo-store-1787161869.netlify.app/health/checkout`, it dispatches:
+2. For a service configured with `checkMethod: "GET"` and URL `https://soter-demo.onrender.com/health/checkout`, it dispatches:
 ```javascript
 var proxyPayload = {
-  url: "https://soter-demo-store-1787161869.netlify.app/health/checkout",
+  url: "https://soter-demo.onrender.com/health/checkout",
   method: "GET"
 };
 
@@ -131,7 +131,7 @@ var options = {
   "status": 200,
   "statusText": "OK",
   "ok": true,
-  "url": "https://soter-demo-store-1787161869.netlify.app/health/checkout",
+  "url": "https://soter-demo.onrender.com/health/checkout",
   "method": "GET",
   "error": null
 }
@@ -436,7 +436,7 @@ An incident is VISIBLE to CurrentUser if:
 > **Answer:** `json-server` provides a zero-boilerplate, compliant RESTful API over HTTP directly matching standard CRUD operations (`GET`, `POST`, `PATCH`, `DELETE`). For a simulation and frontend-heavy architectural demonstration, it provides immediate JSON persistence in `db.json` without requiring external database servers, while our custom `server.js` seamlessly wraps it alongside our proxy engine.
 
 ### Q2: Why is the Node.js Proxy Server required for health checks? Why couldn't client JavaScript check the health endpoints directly?
-> **Answer:** Browser security policies (Same-Origin Policy and CORS) prevent client-side JavaScript from reading HTTP responses from third-party domains (like Netlify or Stripe) unless they explicitly provide permissive CORS headers. Even with `no-cors`, the browser returns an opaque response with `status: 0`, which hides whether the endpoint returned `200 OK` or `500 Internal Server Error`. The Node proxy performs server-to-server requests where CORS does not exist, reads the true status code, and relays it back to the client.
+> **Answer:** Browser security policies (Same-Origin Policy and CORS) prevent client-side JavaScript from reading HTTP responses from third-party domains (like Render or Stripe) unless they explicitly provide permissive CORS headers. Even with `no-cors`, the browser returns an opaque response with `status: 0`, which hides whether the endpoint returned `200 OK` or `500 Internal Server Error`. The Node proxy performs server-to-server requests where CORS does not exist, reads the true status code, and relays it back to the client.
 
 ### Q3: How does your proxy server handle `POST` requests with custom payloads?
 > **Answer:** When probing a POST endpoint, client-side `health.js` passes the payload to `/proxy`. The proxy calculates the exact payload byte length using `Buffer.byteLength(bodyData)` to prevent HTTP header mismatch errors, sets `Content-Type: application/json` and `Content-Length`, and streams the data into the target socket using `proxyReq.write(bodyData)` before calling `proxyReq.end()`.
