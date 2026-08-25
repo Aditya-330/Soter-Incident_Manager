@@ -146,8 +146,24 @@ When a service requires a POST body (e.g. testing checkout order submission):
 1. `service.requestBody` contains:
 ```json
 {
-  "items": [{ "id": "prod-01", "name": "Headphones", "price": 79.99, "quantity": 1 }],
-  "total": 79.99
+  "items": [
+    {
+      "productId": "prod_001",
+      "quantity": 2
+    },
+    {
+      "productId": "prod_002",
+      "quantity": 1
+    }
+  ],
+  "shipping": {
+    "name": "Jane Doe",
+    "address": "123 Main St",
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94105",
+    "method": "express"
+  }
 }
 ```
 2. The client packages this body into `proxyPayload.body` and sends it to `/proxy`.

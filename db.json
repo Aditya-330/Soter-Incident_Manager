@@ -238,7 +238,7 @@
       "healthEndpoint": "https://soter-demo-store-1787161869.netlify.app/api/checkout",
       "checkMethod": "POST",
       "checkIntervalSeconds": 15,
-      "requestBody": "{\n  \"items\": [\n    {\n      \"id\": \"prod-01\",\n      \"name\": \"Wireless Headphones\",\n      \"price\": 79.99,\n      \"quantity\": 1\n    }\n  ],\n  \"total\": 79.99\n}",
+      "requestBody": "{\n  \"items\": [\n    {\n      \"productId\": \"prod_001\",\n      \"quantity\": 2\n    },\n    {\n      \"productId\": \"prod_002\",\n      \"quantity\": 1\n    }\n  ],\n  \"shipping\": {\n    \"name\": \"Jane Doe\",\n    \"address\": \"123 Main St\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zip\": \"94105\",\n    \"method\": \"express\"\n  }\n}",
       "status": "healthy",
       "lastError": null
     },
