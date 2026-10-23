@@ -1,0 +1,473 @@
+{
+  "info": {
+    "name": "Soter Incident Manager API",
+    "_postman_id": "c1f7b8e0-4a88-4c27-b50a-9e1234567890",
+    "description": "API collection for Soter Incident Manager on Render",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://soter-backend.onrender.com",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Authentication",
+      "item": [
+        {
+          "name": "Login - Superadmin",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@soter.io\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login - Company Admin (Aditya)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"aditya@soterstore.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register Company (Pending)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"Acme Corp\",\n  \"adminName\": \"John Doe\",\n  \"adminEmail\": \"john@acmecorp.com\",\n  \"adminPassword\": \"admin123\",\n  \"website\": \"https://acme.com\",\n  \"industry\": \"Technology\",\n  \"size\": \"11-50 employees\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register-company",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register-company"]
+            }
+          }
+        },
+        {
+          "name": "Signup via Invite Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane@soterstore.com\",\n  \"password\": \"admin123\",\n  \"role\": \"junior\",\n  \"inviteCode\": \"INV-SOTER-2026\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "signup"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Health-Check Proxy",
+      "item": [
+        {
+          "name": "Proxy GET - Safe Outbound Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/proxy?url=https://soter-demo.onrender.com/",
+              "host": ["{{baseUrl}}"],
+              "path": ["proxy"],
+              "query": [
+                { "key": "url", "value": "https://soter-demo.onrender.com/" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Proxy POST - Safe Outbound Ping",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://soter-demo.onrender.com/\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/proxy",
+              "host": ["{{baseUrl}}"],
+              "path": ["proxy"]
+            }
+          }
+        },
+        {
+          "name": "Proxy SSRF Test (Blocks 127.0.0.1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/proxy?url=http://127.0.0.1:5001/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["proxy"],
+              "query": [
+                { "key": "url", "value": "http://127.0.0.1:5001/health" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Companies",
+      "item": [
+        {
+          "name": "Get All Companies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/companies",
+              "host": ["{{baseUrl}}"],
+              "path": ["companies"]
+            }
+          }
+        },
+        {
+          "name": "Get Company By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/companies/mt0gjk7yj6qpxy",
+              "host": ["{{baseUrl}}"],
+              "path": ["companies", "mt0gjk7yj6qpxy"]
+            }
+          }
+        },
+        {
+          "name": "Approve / Update Company (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/companies/mt0gjk7yj6qpxy",
+              "host": ["{{baseUrl}}"],
+              "path": ["companies", "mt0gjk7yj6qpxy"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Get Users Filtered By Company",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?companyId=mt0gjk7yj6qpxy",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                { "key": "companyId", "value": "mt0gjk7yj6qpxy" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single User By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/usr-admin-aditya",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "usr-admin-aditya"]
+            }
+          }
+        },
+        {
+          "name": "Create User (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"mt0gjk7yj6qpxy\",\n  \"name\": \"Test Engineer\",\n  \"email\": \"test.engineer@soterstore.com\",\n  \"password\": \"admin123\",\n  \"role\": \"junior\",\n  \"teamId\": \"team-checkout-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Update User Role or Password (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"senior\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/usr-chk-03",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "usr-chk-03"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Incidents",
+      "item": [
+        {
+          "name": "Get All Incidents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/incidents",
+              "host": ["{{baseUrl}}"],
+              "path": ["incidents"]
+            }
+          }
+        },
+        {
+          "name": "Create Incident (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"mt0gjk7yj6qpxy\",\n  \"title\": \"Payment Gateway Latency Spike\",\n  \"description\": \"5xx errors on checkout webhook\",\n  \"serviceId\": \"srv-chk-01\",\n  \"severity\": \"high\",\n  \"status\": \"open\",\n  \"slaDeadline\": \"2026-10-26T12:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/incidents",
+              "host": ["{{baseUrl}}"],
+              "path": ["incidents"]
+            }
+          }
+        },
+        {
+          "name": "Update Incident Status (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"acknowledged\",\n  \"acknowledgedBy\": \"Radhika\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/incidents/inc-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["incidents", "inc-01"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Services & Teams",
+      "item": [
+        {
+          "name": "Get Services",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["services"]
+            }
+          }
+        },
+        {
+          "name": "Create Service (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"mt0gjk7yj6qpxy\",\n  \"teamId\": \"team-checkout-01\",\n  \"name\": \"New Order Processor\",\n  \"healthEndpoint\": \"https://soter-demo.onrender.com/\",\n  \"checkMethod\": \"GET\",\n  \"checkIntervalSeconds\": 60,\n  \"status\": \"healthy\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["services"]
+            }
+          }
+        },
+        {
+          "name": "Get Teams",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/teams",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams"]
+            }
+          }
+        },
+        {
+          "name": "Create Team (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"mt0gjk7yj6qpxy\",\n  \"name\": \"DevOps & Infrastructure\",\n  \"description\": \"Core platform and reliability engineering\",\n  \"memberIds\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teams",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Escalation & Audit Logs",
+      "item": [
+        {
+          "name": "Get Escalation Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/escalationLogs",
+              "host": ["{{baseUrl}}"],
+              "path": ["escalationLogs"]
+            }
+          }
+        },
+        {
+          "name": "Create Escalation Log (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"mt0gjk7yj6qpxy\",\n  \"incidentId\": \"inc-01\",\n  \"eventType\": \"INCIDENT_ACKNOWLEDGED\",\n  \"userId\": \"usr-chk-01\",\n  \"actorRole\": \"teamadmin\",\n  \"note\": \"Investigating payment failure queue\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/escalationLogs",
+              "host": ["{{baseUrl}}"],
+              "path": ["escalationLogs"]
+            }
+          }
+        },
+        {
+          "name": "Get Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auditLogs",
+              "host": ["{{baseUrl}}"],
+              "path": ["auditLogs"]
+            }
+          }
+        },
+        {
+          "name": "Get Invite Codes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inviteCodes",
+              "host": ["{{baseUrl}}"],
+              "path": ["inviteCodes"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
