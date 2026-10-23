@@ -67,11 +67,12 @@ async function runDueHealthChecks() {
     }
   }
 }
-var HEALTH_PROXY_URL = window.HEALTH_PROXY_URL || localStorage.getItem('soter_proxy_url') || (
-  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? (window.location.port === '3001' ? 'http://localhost:3001' : 'http://localhost:3002')
-    : window.location.origin
-);
+// HEALTH_PROXY_URL — base URL for the backend proxy endpoint.
+// Priority:
+//   1. window.HEALTH_PROXY_URL — set before script load for custom overrides
+//   2. localStorage             — set via DevTools: localStorage.setItem('soter_proxy_url', '...')
+//   3. API_BASE                 — the central backend URL from storage.js (always points to production)
+var HEALTH_PROXY_URL = window.HEALTH_PROXY_URL || localStorage.getItem('soter_proxy_url') || (typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:5001');
 
 async function performHealthCheck(service) {
   var method = (service.checkMethod || 'GET').toUpperCase();
