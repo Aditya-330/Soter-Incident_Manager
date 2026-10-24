@@ -1,8 +1,34 @@
-var API_BASE = window.API_BASE || localStorage.getItem('soter_api_base') || (
-  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:3001'
-    : window.location.origin
-);
+// ─── API Base URL ──────────────────────────────────────────────────────────────
+// Priority:
+//   1. window.API_BASE   — set before script load for custom overrides
+//   2. localStorage      — set via DevTools: localStorage.setItem('soter_api_base', 'http://localhost:5001')
+var DEPLOYED_BACKEND = 'http://localhost:5001';
+var API_BASE = window.API_BASE || localStorage.getItem('soter_api_base') || DEPLOYED_BACKEND;
+
+var TOKEN_KEY = 'soter_jwt';
+
+function getToken() {
+  return sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY) || null;
+}
+
+function setToken(token) {
+  if (token) {
+    sessionStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(TOKEN_KEY, token);
+  }
+}
+
+function clearToken() {
+  sessionStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+function getAuthHeaders(extra) {
+  var headers = Object.assign({ 'Content-Type': 'application/json' }, extra || {});
+  var token = getToken();
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  return headers;
+}
 
 var ROLE_LEVELS = {
   platform_superadmin: 5,
@@ -47,14 +73,14 @@ var api = {
         url += '?' + parts.join('&');
       }
     }
-    return fetch(url).then(function(res) {
+    return fetch(url, { headers: getAuthHeaders({}) }).then(function(res) {
       if (!res.ok) throw new Error('API GET failed: ' + res.status);
       return res.json();
     });
   },
 
   getById: function(resource, id) {
-    return fetch(API_BASE + '/' + resource + '/' + id).then(function(res) {
+    return fetch(API_BASE + '/' + resource + '/' + id, { headers: getAuthHeaders({}) }).then(function(res) {
       if (!res.ok) throw new Error('API GET by ID failed: ' + res.status);
       return res.json();
     });
@@ -64,7 +90,7 @@ var api = {
     var cleanData = sanitizePayload(data);
     return fetch(API_BASE + '/' + resource, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(cleanData)
     }).then(function(res) {
       if (!res.ok) throw new Error('API POST failed: ' + res.status);
@@ -76,7 +102,7 @@ var api = {
     var cleanData = sanitizePayload(data);
     return fetch(API_BASE + '/' + resource + '/' + id, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(cleanData)
     }).then(function(res) {
       if (!res.ok) throw new Error('API PUT failed: ' + res.status);
@@ -88,7 +114,7 @@ var api = {
     var cleanData = sanitizePayload(data);
     return fetch(API_BASE + '/' + resource + '/' + id, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(cleanData)
     }).then(function(res) {
       if (!res.ok) throw new Error('API PATCH failed: ' + res.status);
@@ -98,9 +124,10 @@ var api = {
 
   delete: function(resource, id) {
     return fetch(API_BASE + '/' + resource + '/' + id, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getAuthHeaders({})
     }).then(function(res) {
-      if (res.status === 404) return {}; 
+      if (res.status === 404) return {};
       if (!res.ok) throw new Error('API DELETE failed: ' + res.status);
 
       return res.text().then(function(text) {

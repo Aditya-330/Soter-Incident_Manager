@@ -75,6 +75,9 @@
           null
         );
         if (res.success) {
+          // Persist the JWT returned by the backend so all subsequent API
+          // calls are authenticated (same pattern as the login() function).
+          if (res.token) setToken(res.token);
           sessionStorage.setItem('current_user', JSON.stringify(res.user));
           window.location.href = 'dashboard.html';
         } else {

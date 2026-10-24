@@ -1,0 +1,14 @@
+{
+  "name": "soter-frontend",
+  "version": "1.0.0",
+  "description": "Soter Incident Manager — Frontend static server",
+  "main": "serve.js",
+  "scripts": {
+    "start": "node serve.js",
+    "dev": "node serve.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
