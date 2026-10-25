@@ -1,14 +1,14 @@
 {
-  "name": "oncall-b2b-ca1",
-  "version": "1.0.0",
-  "description": "On-Call Incident Escalation Manager — Phase 1",
+  "name": "soter-incident-manager",
+  "version": "2.0.0",
+  "description": "Soter Incident Manager — Modernized (Express + MongoDB Atlas + Vanilla JS)",
+  "private": true,
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "json-server": "json-server --watch db.json --port 3001",
-    "proxy": "node proxy-server.js"
-  },
-  "dependencies": {
-    "json-server": "^0.17.4"
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "install:all": "cd backend && npm install",
+    "migrate": "cd backend && npm run migrate",
+    "start": "cd backend && npm start"
   }
 }

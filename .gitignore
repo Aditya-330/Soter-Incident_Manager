@@ -7,3 +7,8 @@ node_modules/
 git_replay*.sh
 DEPLOYMENT.md
 db.seed.json
+
+# Backend
+backend/node_modules/
+backend/.env
+db.backup*.json
