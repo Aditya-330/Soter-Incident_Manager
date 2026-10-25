@@ -1,117 +1,161 @@
-# On-Call Incident Escalation Manager — Phase 1 (json-server)
+# Soter Incident Manager — Modernized
 
-A lightweight incident escalation tool built with HTML5, CSS3, Vanilla JavaScript, and **json-server** for persistence. No frameworks, no Express, no build tools — static HTML/CSS/JS served directly, talking to json-server's REST API over `fetch()`.
+A full-stack incident management platform built with vanilla HTML/CSS/JS (frontend) and Node.js + Express + MongoDB Atlas (backend).
 
-## Key Features
+---
 
-### Core
-- **4-Level Role Hierarchy:** Super Admin > Team Admin > Senior Engineer > Junior Engineer.
-- **SLA Countdown Timers:** Real-time SLA countdowns based on incident severity (Critical=5m, High=15m, Medium=30m, Low=60m).
-- **Immutable Audit Trail:** Logs every action with relative timestamps, merged view of system + escalation events.
-- **Live Stats & Analytics:** Uses `reduce()` and `filter()` to compute open/resolved incident counts in real-time.
-- **Member Management:** Admins can assign users to teams dynamically.
-- **Premium UI:** Dark/Light mode toggle, CSS keyframe animations, glassmorphism cards, and responsive layout.
-- **Keyboard Shortcuts:** Power user shortcuts (`Ctrl+N` for new incident, `/` to search).
-
-### New in Phase 1
-- **json-server Persistence:** All data stored in `db.json` via REST API — no more localStorage.
-- **Multi-Tenant Companies:** Each company gets isolated data. Register your company, then invite team members via codes.
-- **Cross-Team Dependency-Aware Escalation:** When a service goes down, its dependency graph is walked and upstream teams are paged IN PARALLEL — not sequentially. Each gets independent SLA timers and escalation ladders.
-- **Cycle Detection:** A→B→A dependency loops are detected and prevent infinite notifications.
-- **Notification Trail:** Per-incident timeline showing who got paged, on what basis (primary vs. dependency), and their ack/escalation status.
-- **Health Monitoring:** Real-time service health dashboard with automatic incident creation when outages are detected.
-- **Invite Code System:** Company-scoped invite codes for secure signup. Superadmins can generate and manage codes.
-
-## How to Run
-
-1. **Install dependencies:**
-   ```bash
-   cd oncall-b2b-ca1
-   npm install
-   ```
-
-2. **Start json-server** (Terminal 1):
-   ```bash
-   npm start
-   ```
-   This starts json-server on `http://localhost:3001` watching `db.json`.
-
-3. **Serve static files** (Terminal 2):
-   ```bash
-   python3 -m http.server 8000
-   ```
-
-4. Visit `http://localhost:8000`
-
-## Seeded Accounts (Acme Corp)
-
-- **Super Admin:** `super@oncall.io` (pw: `admin`)
-- **Team Admin:** `alice@oncall.io` (pw: `admin`)
-- **Team Admin:** `bob@oncall.io` (pw: `admin`)
-- **Senior Eng:** `charlie@oncall.io` (pw: `password`)
-- **Senior Eng:** `diana@oncall.io` (pw: `password`)
-- **Junior Eng:** `eve@oncall.io` (pw: `password`)
-- **Junior Eng:** `frank@oncall.io` (pw: `password`)
-
-**Default Invite Code:** `ACME-JOIN-2026`
-
-> **⚠️ Security Warning:** This is a **client-side simulation**. Passwords are stored in plain text in `db.json`. A real system requires a backend to hash passwords.
-
-## File Structure
+## Architecture
 
 ```
-oncall-b2b-ca1/
-├── index.html          (Landing page with feature showcase)
-├── register.html       (NEW: Company registration flow)
-├── login.html          (Login with sessionStorage)
-├── signup.html         (Signup via invite code)
-├── dashboard.html      (Main hub: stats, search, incidents, notification trails)
-├── admin.html          (Manage teams, services, members, invite codes)
-├── audit.html          (View merged audit + escalation trail)
-├── db.json             (NEW: json-server database)
-├── package.json        (NEW: json-server dependency)
-├── css/
-│   └── style.css       (Premium dark/light theme + cross-team styles)
-├── js/
-│   ├── storage.js      (NEW: fetch-based API client for json-server)
-│   ├── auth.js         (Async role hierarchy auth via fetch)
-│   ├── teams.js        (Async team + member logic)
-│   ├── services.js     (Async service CRUD + dependencyGraph)
-│   ├── incidents.js    (Async incidents + cross-team escalation engine)
-│   ├── admin.js        (Async admin forms + invite code management)
-│   ├── health.js       (Ambient health monitor with auto-incident creation)
-│   ├── audit.js        (Merged audit + escalation log viewer)
-│   └── utils.js        (Time formatting, shortcuts, async export)
-├── README.md
-└── docs/
-    ├── GIT_COMMITS.md  (Commit log per contributor)
-    └── GIT_BRANCHES_AND_COMMITS.md (Branching & Git Flow specification)
+soter-incident-manager/
+├── frontend/          # Static HTML/CSS/JS — served as a static site
+│   ├── index.html
+│   ├── dashboard.html
+│   ├── ... (all HTML pages)
+│   ├── js/            # Frontend JS modules
+│   ├── css/           # Styles
+│   └── serve.js       # Minimal Node static server (dev use)
+│
+├── backend/           # Express REST API + MongoDB
+│   ├── server.js      # Entry point
+│   ├── config/db.js   # MongoDB Atlas connection
+│   ├── models/        # Mongoose schemas (9 collections)
+│   ├── routes/        # REST API + /proxy health-check route
+│   ├── middleware/    # JWT auth, error handler
+│   ├── utils/seed.js  # Platform superadmin seeder
+│   └── scripts/migrate.js  # One-time db.json → MongoDB migration
+│
+├── render.yaml        # Render.com deployment config
+└── db.json            # Legacy json-server data (migration source)
 ```
 
-## db.json Resources
+---
 
-| Resource | Description |
-|----------|-------------|
-| `companies` | Multi-tenant company records |
-| `users` | Users scoped to a company |
-| `teams` | Teams scoped to a company |
-| `services` | Services with health status |
-| `dependencyGraph` | Service-to-service dependency edges |
-| `incidents` | Incidents with cross-team fields |
-| `escalationLogs` | Incident-specific escalation events |
-| `auditLogs` | General system audit events |
-| `inviteCodes` | Company-scoped invite codes for signup |
+## Quick Start (Local Development)
 
+### Prerequisites
+- Node.js ≥ 18
+- A [MongoDB Atlas](https://www.mongodb.com/atlas) cluster (free tier is fine)
 
-<img width="1280" height="723" alt="PHOTO-2026-08-23-20-58-18" src="https://github.com/user-attachments/assets/cc43a91d-6134-40b8-bcd6-28fd1d2f68e1" />
-<img width="1280" height="723" alt="PHOTO-2026-08-23-20-58-18" src="https://github.com/user-attachments/assets/6b1be918-1db4-432d-b52b-159d871cf9e5" />
-<img width="1456" height="837" alt="PHOTO-2026-08-23-20-58-17" src="https://github.com/user-attachments/assets/649f816e-8d18-4339-8aca-2b59db771583" />
+### 1. Configure the backend environment
 
+```bash
+cd backend
+cp .env.example .env
+```
 
-## Contributors
+Edit `backend/.env`:
 
-| Member | Role | Key Modules |
+```env
+PORT=5000
+NODE_ENV=development
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/soter?retryWrites=true&w=majority
+JWT_SECRET=your_super_secure_secret_here
+JWT_EXPIRES_IN=7d
+CORS_ORIGIN=http://localhost:3000
+PLATFORM_ADMIN_EMAIL=admin@soter.io
+PLATFORM_ADMIN_PASSWORD=change_this_in_production
+```
+
+### 2. Install backend dependencies
+
+```bash
+cd backend
+npm install
+```
+
+### 3. (Optional) Migrate existing data from db.json
+
+> ⚠️ Only run this once. The script creates a backup and is idempotent.
+
+```bash
+cd backend
+npm run migrate
+```
+
+### 4. Start the backend
+
+```bash
+cd backend
+npm run dev    # uses nodemon for auto-reload
+# or: npm start
+```
+
+Backend runs at **http://localhost:5000**
+
+### 5. Serve the frontend
+
+Open `frontend/index.html` directly in your browser, **or** run the minimal static server:
+
+```bash
+cd frontend
+node serve.js
+```
+
+Frontend runs at **http://localhost:3000**
+
+### 6. Log in
+
+| Role | Email | Password |
+|------|-------|----------|
+| Platform Superadmin | `admin@soter.io` | `admin123` (change in `.env`) |
+
+---
+
+## API Overview
+
+All REST endpoints follow json-server semantics for full frontend compatibility.
+
+| Method | Path | Description |
 |--------|------|-------------|
-| **Ravish** | Storage/API, Health, Styling | `storage.js`, `services.js`, `health.js`, `style.css`, `db.json` |
-| **Aditya** | Teams/Admin, UI Forms, Docs | `teams.js`, `admin.js`, `utils.js`, `signup.html` |
-| **Radhika** | Auth, Incidents/Escalation, Audit | `auth.js`, `incidents.js`, `audit.js`, `dashboard.html`, `register.html` |
+| `POST` | `/api/auth/login` | Login → returns JWT + user |
+| `POST` | `/api/auth/register-company` | Register new company (pending) |
+| `POST` | `/api/auth/signup` | Join workspace via invite code |
+| `GET/POST` | `/proxy` | Health-check proxy (CORS bridge) |
+| `GET/POST/PUT/PATCH/DELETE` | `/api/companies/:id?` | Company CRUD |
+| `GET/POST/PUT/PATCH/DELETE` | `/api/users/:id?` | User CRUD |
+| `GET/POST/PUT/PATCH/DELETE` | `/api/teams/:id?` | Team CRUD |
+| `GET/POST/PUT/PATCH/DELETE` | `/api/services/:id?` | Service CRUD |
+| `GET/POST/PUT/PATCH/DELETE` | `/api/incidents/:id?` | Incident CRUD |
+| `GET/POST/PUT/PATCH/DELETE` | `/api/escalationLogs/:id?` | Escalation log CRUD |
+| `GET/POST/PUT/PATCH/DELETE` | `/api/auditLogs/:id?` | Audit log CRUD |
+| `GET/POST/PUT/PATCH/DELETE` | `/api/inviteCodes/:id?` | Invite code CRUD |
+| `GET/POST/PUT/PATCH/DELETE` | `/api/dependencyGraph/:id?` | Service dependency edges |
+
+All legacy paths (without `/api/` prefix) are also supported for frontend backwards-compatibility.
+
+---
+
+## Deployment (Render.com)
+
+1. Push your code to GitHub
+2. Go to [render.com](https://render.com) → New → Blueprint
+3. Select `render.yaml` from your repo
+4. Set the following env vars in the Render dashboard for `soter-backend`:
+   - `MONGODB_URI` — your Atlas connection string
+   - `PLATFORM_ADMIN_PASSWORD` — a strong password
+
+---
+
+## Security Features
+
+- **Passwords**: bcrypt (cost factor 12) — never stored in plaintext
+- **Auth tokens**: JWT with configurable expiry (`JWT_EXPIRES_IN`)
+- **Proxy SSRF protection**: private IP blocklist (RFC 1918, localhost, link-local), protocol allowlist (https only in prod), DNS resolution check, request timeouts
+- **Rate limiting**: 500 requests / 15 minutes global, stricter on `/proxy`
+- **CORS**: allowlist-only, configurable via `CORS_ORIGIN` env var
+
+---
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `MONGODB_URI` | ✅ | MongoDB Atlas connection string |
+| `JWT_SECRET` | ✅ | Secret for signing JWTs |
+| `PORT` | No | Server port (default: 5000) |
+| `NODE_ENV` | No | `development` or `production` |
+| `JWT_EXPIRES_IN` | No | JWT expiry (default: `7d`) |
+| `CORS_ORIGIN` | No | Comma-separated allowed origins |
+| `PLATFORM_ADMIN_EMAIL` | No | Platform admin email (default: `admin@soter.io`) |
+| `PLATFORM_ADMIN_PASSWORD` | No | Platform admin password (default: `admin123`) |
