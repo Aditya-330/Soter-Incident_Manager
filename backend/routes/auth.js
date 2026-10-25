@@ -22,7 +22,10 @@ function generateToken(user) {
   );
 }
 
-// Resolve a company by its legacyId OR MongoDB _id string
+/**
+ * Resolve a company by its legacyId OR MongoDB _id string.
+ * Supports legacy migration IDs and native 24-character hex ObjectIds.
+ */
 async function findCompanyById(idStr) {
   if (!idStr) return null;
   let company = await Company.findOne({ legacyId: idStr });
